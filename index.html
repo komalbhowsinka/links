@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>outlandish humor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   OUTLANDISH HUMOR — personal site
+   Cool & Modern: Navy · White · Electric Blue
+═══════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:       #0a0e1a;
+  --navy2:      #111827;
+  --navy3:      #1c2537;
+  --navy4:      #243044;
+  --blue:       #2563eb;
+  --blue-bright:#3b82f6;
+  --blue-glow:  #60a5fa;
+  --blue-pale:  #dbeafe;
+  --white:      #f8fafc;
+  --white2:     #e2e8f0;
+  --white3:     #94a3b8;
+  --white4:     #64748b;
+  --border:     rgba(148,163,184,0.12);
+  --border2:    rgba(148,163,184,0.22);
+  --border3:    rgba(59,130,246,0.35);
+  --radius:     12px;
+  --radius-sm:  7px;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'Space Grotesk', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* subtle grid texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(37,99,235,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* blue glow orb top right */
+body::after {
+  content: '';
+  position: fixed;
+  top: -160px; right: -160px;
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 5rem;
+}
+
+/* ── PROFILE ───────────────────────────────── */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy3), var(--navy4));
+  border: 1.5px solid var(--border3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  box-shadow: 0 0 24px rgba(37,99,235,0.2);
+}
+
+.profile-info {}
+.profile-name {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.profile-handle {
+  font-size: 12px;
+  color: var(--white3);
+  letter-spacing: 0.08em;
+}
+.profile-handle span {
+  color: var(--blue-glow);
+}
+
+/* ── NAV ───────────────────────────────────── */
+.nav {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 2.5rem;
+  background: var(--navy2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 9px 8px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--white3);
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.nav-btn.active {
+  background: var(--blue);
+  color: var(--white);
+  box-shadow: 0 0 16px rgba(37,99,235,0.4);
+}
+.nav-btn:hover:not(.active) {
+  background: var(--navy3);
+  color: var(--white2);
+}
+
+/* ── SECTIONS ──────────────────────────────── */
+.section { display: none; }
+.section.visible {
+  display: block;
+  animation: fadeUp 0.3s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION HEADER ────────────────────────── */
+.sec-header { margin-bottom: 2rem; }
+.sec-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--white);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+.sec-sub {
+  font-size: 11px;
+  color: var(--white4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── LINK CARDS ─────────────────────────────── */
+.link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  background: var(--navy2);
+  text-decoration: none;
+  color: var(--white);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.link-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--blue);
+  border-radius: 2px 0 0 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.link-card:hover {
+  border-color: var(--border3);
+  background: var(--navy3);
+  transform: translateX(3px);
+}
+.link-card:hover::before { opacity: 1; }
+
+.link-left { display: flex; align-items: center; gap: 14px; }
+.link-icon {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  background: var(--navy3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.link-label { font-size: 14px; font-weight: 400; color: var(--white); }
+.link-sub   { font-size: 11px; color: var(--white4); margin-top: 2px; }
+.link-arrow { font-size: 14px; color: var(--blue-glow); }
+
+/* ── FILTERS ─────────────────────────────────── */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.f-btn {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  font-size: 10px;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  background: transparent;
+  color: var(--white3);
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.f-btn.active {
+  background: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+  box-shadow: 0 0 12px rgba(37,99,235,0.35);
+}
+.f-btn:hover:not(.active) {
+  border-color: var(--border3);
+  color: var(--white2);
+  background: var(--navy3);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0 1rem;
+}
+
+.count {
+  font-size: 11px;
+  color: var(--white4);
+  margin-bottom: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── ESSAY CARDS ─────────────────────────────── */
+.essay-card {
+  display: block;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 10px;
+  background: var(--navy2);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.essay-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(37,99,235,0.04), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.essay-card:hover {
+  border-color: var(--border3);
+  background: var(--navy3);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.essay-card:hover::after { opacity: 1; }
+
+.essay-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+.essay-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.45;
+}
+.essay-arrow { font-size: 13px; color: var(--blue-glow); flex-shrink: 0; margin-top: 3px; }
+.essay-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+/* TAGS */
+.tag {
+  font-size: 9px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+.tag-philosophy { border-color: #22d3ee44; color: #22d3ee; background: #22d3ee11; }
+.tag-psychology  { border-color: #a78bfa44; color: #a78bfa; background: #a78bfa11; }
+.tag-science     { border-color: #fbbf2444; color: #fbbf24; background: #fbbf2411; }
+.tag-identity    { border-color: #f4727244; color: #f47272; background: #f4727211; }
+.tag-culture     { border-color: #34d39944; color: #34d399; background: #34d39911; }
+.tag-economics   { border-color: #fb923c44; color: #fb923c; background: #fb923c11; }
+
+.essay-source { font-size: 10px; color: var(--white4); letter-spacing: 0.04em; }
+.essay-date   { font-size: 10px; color: var(--white4); }
+.essay-desc   { font-size: 12px; color: var(--white3); line-height: 1.7; }
+
+/* ── BOOK CARDS ─────────────────────────────── */
+.year-label {
+  font-size: 10px;
+  color: var(--blue-glow);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 2rem 0 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.year-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.book-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 10px;
+  background: var(--navy2);
+  transition: border-color 0.2s;
+}
+.book-card:hover { border-color: var(--border2); }
+
+.book-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.book-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.4;
+}
+.verdict {
+  font-size: 9px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.verdict-read { border-color: #34d39944; color: #34d399; background: #34d39911; }
+.verdict-skip { border-color: #f4727244; color: #f47272; background: #f4727211; }
+
+.book-meta   { font-size: 11px; color: var(--white4); margin-bottom: 9px; }
+.book-review { font-size: 12px; color: var(--white3); line-height: 1.7; margin-bottom: 6px; }
+
+.book-extra {
+  font-size: 11px;
+  color: var(--white3);
+  line-height: 1.65;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.book-extra-label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.label-read { color: #34d399; }
+.label-skip { color: #f47272; }
+
+.book-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.btn-del {
+  font-size: 10px;
+  font-family: var(--font-sans);
+  color: var(--white4);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.btn-del:hover { border-color: #f4727266; color: #f47272; }
+
+/* ── ADD FORMS ───────────────────────────────── */
+.add-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-family: var(--font-sans);
+  color: var(--white4);
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 6px;
+  transition: all 0.18s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.add-toggle:hover {
+  border-color: var(--border3);
+  color: var(--blue-glow);
+  background: rgba(37,99,235,0.04);
+}
+
+.add-form {
+  border: 1px solid var(--border3);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 10px;
+  background: var(--navy2);
+  display: none;
+  animation: fadeUp 0.25s ease;
+}
+.add-form.open { display: block; }
+
+.form-row { margin-bottom: 14px; }
+.form-label {
+  font-size: 10px;
+  color: var(--white4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+.form-optional { color: var(--white4); opacity: 0.6; }
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--navy3);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.18s;
+}
+.form-input::placeholder, .form-textarea::placeholder { color: var(--white4); }
+.form-input:focus, .form-textarea:focus { border-color: var(--blue); }
+.form-textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.tag-pick {
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  font-size: 10px;
+  font-family: var(--font-sans);
+  background: transparent;
+  color: var(--white3);
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tag-pick:hover { border-color: var(--border3); color: var(--blue-glow); }
+.tag-pick.selected {
+  background: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+  box-shadow: 0 0 10px rgba(37,99,235,0.35);
+}
+
+.form-actions { display: flex; gap: 8px; margin-top: 6px; }
+.btn-save {
+  flex: 1;
+  padding: 10px;
+  background: var(--blue);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 16px rgba(37,99,235,0.3);
+}
+.btn-save:hover { background: var(--blue-bright); box-shadow: 0 0 24px rgba(37,99,235,0.5); }
+.btn-cancel {
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--white4);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-cancel:hover { background: var(--navy3); }
+
+/* ── EMPTY STATE ─────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  font-size: 12px;
+  color: var(--white4);
+  letter-spacing: 0.04em;
+}
+
+/* ── OWNER BADGE ─────────────────────────────── */
+.owner-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+  background: rgba(37,99,235,0.12);
+  border: 1px solid var(--border3);
+  border-radius: var(--radius-sm);
+  margin-bottom: 2rem;
+  font-size: 11px;
+  color: var(--blue-glow);
+  letter-spacing: 0.06em;
+}
+.owner-bar.show { display: flex; }
+.btn-logout {
+  font-size: 10px;
+  background: transparent;
+  border: 1px solid var(--border3);
+  border-radius: 5px;
+  color: var(--white4);
+  padding: 3px 10px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.btn-logout:hover { color: var(--white); border-color: var(--border2); }
+
+/* ── LOGIN OVERLAY ───────────────────────────── */
+.login-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(10,14,26,0.92);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.login-overlay.show { display: flex; }
+
+.login-box {
+  background: var(--navy2);
+  border: 1px solid var(--border3);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 48px rgba(37,99,235,0.15);
+  animation: fadeUp 0.3s ease;
+}
+.login-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-style: italic;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.login-sub {
+  font-size: 11px;
+  color: var(--white4);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.04em;
+}
+.login-err {
+  font-size: 11px;
+  color: #f47272;
+  margin-top: 8px;
+  display: none;
+  letter-spacing: 0.04em;
+}
+.login-actions { display: flex; gap: 8px; margin-top: 1rem; }
+
+/* ── LOCK ICON ─────────────────────────────────
+   Hidden element in footer — triple-click to open login */
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--white4);
+  margin-top: 3rem;
+  letter-spacing: 0.06em;
+  user-select: none;
+}
+.lock-trigger {
+  display: inline-block;
+  cursor: default;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+  margin-left: 8px;
+  font-size: 13px;
+}
+.lock-trigger:hover { opacity: 0.6; }
+
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN OVERLAY ══════════════════════════ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-title">Owner access</div>
+    <div class="login-sub">enter your password to edit this page</div>
+    <div class="form-row" style="margin-bottom:0">
+      <input class="form-input" id="pwInput" type="password" placeholder="password"
+        onkeydown="if(event.key==='Enter') tryLogin()"/>
+    </div>
+    <div class="login-err" id="loginErr">incorrect password</div>
+    <div class="login-actions">
+      <button class="btn-save" onclick="tryLogin()">unlock</button>
+      <button class="btn-cancel" onclick="closeLogin()">cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE ════════════════════════════════════ -->
+<div class="page">
+
+  <!-- OWNER BAR (visible when logged in) -->
+  <div class="owner-bar" id="ownerBar">
+    <span>✦ editing as owner</span>
+    <button class="btn-logout" onclick="logout()">lock page</button>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="profile">
+    <div class="avatar">😂</div>
+    <div class="profile-info">
+      <div class="profile-name">outlandish humor</div>
+      <div class="profile-handle"><span>@</span>outlandish_humor</div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab('links',this)">Links</button>
+    <button class="nav-btn" onclick="showTab('essays',this)">Food for Thought</button>
+    <button class="nav-btn" onclick="showTab('books',this)">Book Reviews</button>
+  </div>
+
+  <!-- ══ LINKS ══════════════════════════════ -->
+  <div class="section visible" id="tab-links">
+    <a class="link-card" href="https://instagram.com/outlandish_humor" target="_blank">
+      <div class="link-left">
+        <div class="link-icon">📸</div>
+        <div>
+          <div class="link-label">Instagram</div>
+          <div class="link-sub">@outlandish_humor</div>
+        </div>
+      </div>
+      <div class="link-arrow">↗</div>
+    </a>
+    <a class="link-card" href="https://www.linkedin.com/in/komalbhowsinka/" target="_blank">
+      <div class="link-left">
+        <div class="link-icon">💼</div>
+        <div>
+          <div class="link-label">LinkedIn</div>
+          <div class="link-sub">Komal Bhowsinka</div>
+        </div>
+      </div>
+      <div class="link-arrow">↗</div>
+    </a>
+  </div>
+
+  <!-- ══ FOOD FOR THOUGHT ═══════════════════ -->
+  <div class="section" id="tab-essays">
+    <div class="sec-header">
+      <div class="sec-title">Food for Thought</div>
+      <div class="sec-sub">essays worth your time</div>
+    </div>
+
+    <div class="filters" id="catFilters">
+      <button class="f-btn active" onclick="filterCat('all',this)">All</button>
+      <button class="f-btn" onclick="filterCat('philosophy',this)">Philosophy</button>
+      <button class="f-btn" onclick="filterCat('psychology',this)">Psychology</button>
+      <button class="f-btn" onclick="filterCat('science',this)">Science</button>
+      <button class="f-btn" onclick="filterCat('identity',this)">Identity</button>
+      <button class="f-btn" onclick="filterCat('culture',this)">Culture</button>
+      <button class="f-btn" onclick="filterCat('economics',this)">Economics</button>
+    </div>
+    <div class="filters" id="sortFilters">
+      <button class="f-btn active" onclick="sortEssays('newest',this)">Newest first</button>
+      <button class="f-btn" onclick="sortEssays('oldest',this)">Oldest first</button>
+    </div>
+    <div class="divider"></div>
+    <div class="count" id="essay-count"></div>
+    <div id="essay-cards"></div>
+
+    <!-- owner-only add form -->
+    <div id="essay-add-wrap" style="display:none">
+      <button class="add-toggle" onclick="toggleForm('essay-form')">+ add essay</button>
+      <div class="add-form" id="essay-form">
+        <div class="form-row">
+          <label class="form-label">Essay title</label>
+          <input class="form-input" id="e-title" placeholder="paste the essay title"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">URL</label>
+          <input class="form-input" id="e-url" placeholder="https://aeon.co/..."/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Source</label>
+          <input class="form-input" id="e-source" placeholder="e.g. Aeon, Psyche, NYT"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Description</label>
+          <input class="form-input" id="e-desc" placeholder="why should someone read this?"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Tag</label>
+          <div class="tag-row" id="e-tags">
+            <button class="tag-pick" onclick="pickETag('philosophy',this)">Philosophy</button>
+            <button class="tag-pick" onclick="pickETag('psychology',this)">Psychology</button>
+            <button class="tag-pick" onclick="pickETag('science',this)">Science</button>
+            <button class="tag-pick" onclick="pickETag('identity',this)">Identity</button>
+            <button class="tag-pick" onclick="pickETag('culture',this)">Culture</button>
+            <button class="tag-pick" onclick="pickETag('economics',this)">Economics</button>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-save" onclick="saveEssay()">save essay</button>
+          <button class="btn-cancel" onclick="toggleForm('essay-form')">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BOOK REVIEWS ═══════════════════════ -->
+  <div class="section" id="tab-books">
+    <div class="sec-header">
+      <div class="sec-title">Book Reviews</div>
+      <div class="sec-sub">what I read and what I thought</div>
+    </div>
+
+    <div class="filters" id="yearFilters">
+      <button class="f-btn active" onclick="filterYear('all',this)">All years</button>
+    </div>
+    <div class="divider"></div>
+    <div class="count" id="book-count"></div>
+    <div id="book-cards"></div>
+
+    <!-- owner-only add form -->
+    <div id="book-add-wrap" style="display:none">
+      <button class="add-toggle" onclick="toggleForm('book-form')">+ add book review</button>
+      <div class="add-form" id="book-form">
+        <div class="form-row">
+          <label class="form-label">Book title</label>
+          <input class="form-input" id="b-title" placeholder="e.g. Thinking Fast and Slow"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Author</label>
+          <input class="form-input" id="b-author" placeholder="e.g. Daniel Kahneman"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Year you read it</label>
+          <input class="form-input" id="b-year" type="number" placeholder="e.g. 2025" min="2000" max="2099"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Your review</label>
+          <textarea class="form-textarea" id="b-review" placeholder="what did you think?"></textarea>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Verdict</label>
+          <div class="tag-row" id="b-verdict-row">
+            <button class="tag-pick" onclick="pickVerdict('read',this)">Read it ✓</button>
+            <button class="tag-pick" onclick="pickVerdict('skip',this)">Skip it ✕</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Why read it? <span class="form-optional">(optional)</span></label>
+          <textarea class="form-textarea" id="b-why-read" placeholder="who would love this and why?" style="min-height:56px"></textarea>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Why skip it? <span class="form-optional">(optional)</span></label>
+          <textarea class="form-textarea" id="b-why-skip" placeholder="who would be bored and why?" style="min-height:56px"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-save" onclick="saveBook()">save review</button>
+          <button class="btn-cancel" onclick="toggleForm('book-form')">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    made with curiosity · no ads · no algorithms
+    <span class="lock-trigger" id="lockTrigger" title="">🔒</span>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ▶▶ SET YOUR PASSWORD HERE (replace the text below)
+═══════════════════════════════════════════════ */
+const OWNER_PASSWORD = "your-password-here";
+/* ═══════════════════════════════════════════════ */
+
+// ── DATA ─────────────────────────────────────────
+let essays = JSON.parse(localStorage.getItem('oh_essays') || 'null') || [
+  {id:1,title:"You can use music to escape your negative thought loops",url:"https://psyche.co/ideas/you-can-use-music-to-escape-your-negative-thought-loops",source:"Psyche",category:"psychology",date:"2026-03-27",dateLabel:"Mar 2026",desc:"Your brain has a spiral mode. Turns out music doesn't just distract you — it quiets the network running it."},
+  {id:2,title:"Is life worth living? The pragmatic maybe of William James",url:"https://aeon.co/essays/is-life-worth-living-the-pragmatic-maybe-of-william-james",source:"Aeon",category:"philosophy",date:"2026-03-22",dateLabel:"Mar 2026",desc:"William James's answer wasn't yes or no. It was 'maybe' — and that maybe is more philosophically serious than it sounds."},
+  {id:3,title:"She freed physics but Emmy Noether couldn't escape herself",url:"https://aeon.co/essays/she-freed-physics-but-emmy-noether-couldnt-escape-herself",source:"Aeon",category:"science",date:"2026-03-21",dateLabel:"Mar 2026",desc:"She proved the laws of physics are timeless — but she couldn't escape being a body in a world that used everything against her."},
+  {id:4,title:"Why do some regrets fade while others persist and grow?",url:"https://aeon.co/essays/why-do-some-regrets-fade-while-others-persist-and-grow",source:"Aeon",category:"psychology",date:"2026-03-18",dateLabel:"Mar 2026",desc:"Not all regrets are equal. Some dissolve. Some calcify. The difference says more about identity than the original mistake."},
+  {id:5,title:"IQ scores are falling — but no, we're not growing more stupid",url:"https://psyche.co/ideas/iq-scores-are-falling-but-no-were-not-growing-more-stupid",source:"Psyche",category:"science",date:"2026-03-17",dateLabel:"Mar 2026",desc:"The reverse Flynn Effect sounds alarming. But IQ tests measure what society values at a given moment — not intelligence itself."},
+  {id:6,title:"The lesson of Mexistentialism: the strength of uncertainty",url:"https://aeon.co/essays/the-lesson-of-mexistentialism-the-strength-of-uncertainty",source:"Aeon",category:"philosophy",date:"2026-03-17",dateLabel:"Mar 2026",desc:"Zozobra: the feeling of being between two versions of your life. Mexican philosophers said don't fight it — name it."}
+];
+
+let books  = JSON.parse(localStorage.getItem('oh_books')  || '[]');
+
+let eCat='all', eSort='newest', bYear='all';
+let selectedETag='', selectedVerdict='';
+let isOwner = false;
+let nextId  = Date.now();
+
+function save(){
+  localStorage.setItem('oh_essays', JSON.stringify(essays));
+  localStorage.setItem('oh_books',  JSON.stringify(books));
+}
+
+// ── AUTH ──────────────────────────────────────────
+function openLogin()  { document.getElementById('loginOverlay').classList.add('show'); document.getElementById('pwInput').focus(); }
+function closeLogin() { document.getElementById('loginOverlay').classList.remove('show'); document.getElementById('pwInput').value=''; document.getElementById('loginErr').style.display='none'; }
+
+function tryLogin(){
+  const val = document.getElementById('pwInput').value;
+  if(val === OWNER_PASSWORD){
+    isOwner = true;
+    closeLogin();
+    applyOwnerMode();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function logout(){
+  isOwner = false;
+  applyOwnerMode();
+}
+
+function applyOwnerMode(){
+  document.getElementById('ownerBar').classList.toggle('show', isOwner);
+  document.getElementById('essay-add-wrap').style.display = isOwner ? 'block' : 'none';
+  document.getElementById('book-add-wrap').style.display  = isOwner ? 'block' : 'none';
+  // show/hide delete buttons
+  document.querySelectorAll('.book-actions').forEach(el => el.style.display = isOwner ? 'flex' : 'none');
+}
+
+// triple-click the lock icon opens login
+let lockClicks=0, lockTimer=null;
+document.getElementById('lockTrigger').addEventListener('click', ()=>{
+  lockClicks++;
+  clearTimeout(lockTimer);
+  lockTimer = setTimeout(()=>lockClicks=0, 600);
+  if(lockClicks>=3){ lockClicks=0; openLogin(); }
+});
+
+// ── TABS ──────────────────────────────────────────
+function showTab(tab,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('visible');
+  btn.classList.add('active');
+}
+
+// ── ESSAYS ────────────────────────────────────────
+function filterCat(cat,btn){
+  eCat=cat;
+  document.querySelectorAll('#catFilters .f-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEssays();
+}
+function sortEssays(sort,btn){
+  eSort=sort;
+  document.querySelectorAll('#sortFilters .f-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEssays();
+}
+function renderEssays(){
+  let list=[...essays];
+  if(eCat!=='all') list=list.filter(e=>e.category===eCat);
+  list.sort((a,b)=>eSort==='oldest'?a.date.localeCompare(b.date):b.date.localeCompare(a.date));
+  document.getElementById('essay-count').textContent=list.length+' essay'+(list.length!==1?'s':'');
+  if(!list.length){document.getElementById('essay-cards').innerHTML='<div class="empty">nothing here yet</div>';return;}
+  document.getElementById('essay-cards').innerHTML=list.map(e=>`
+    <a class="essay-card" href="${e.url}" target="_blank">
+      <div class="essay-top">
+        <div class="essay-title">${e.title}</div>
+        <div class="essay-arrow">↗</div>
+      </div>
+      <div class="essay-meta">
+        <span class="tag tag-${e.category}">${e.category}</span>
+        <span class="essay-source">${e.source}</span>
+        <span class="essay-date">${e.dateLabel}</span>
+      </div>
+      <div class="essay-desc">${e.desc}</div>
+    </a>
+  `).join('');
+}
+
+function toggleForm(id){
+  document.getElementById(id).classList.toggle('open');
+}
+function pickETag(tag,btn){
+  selectedETag=tag;
+  document.querySelectorAll('#e-tags .tag-pick').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function saveEssay(){
+  const title=document.getElementById('e-title').value.trim();
+  const url=document.getElementById('e-url').value.trim();
+  const source=document.getElementById('e-source').value.trim();
+  const desc=document.getElementById('e-desc').value.trim();
+  if(!title||!url||!selectedETag){alert('Please fill in title, URL and pick a tag.');return;}
+  const now=new Date();
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  essays.unshift({id:nextId++,title,url,source:source||'—',category:selectedETag,
+    date:now.toISOString().slice(0,10),
+    dateLabel:months[now.getMonth()]+' '+now.getFullYear(),desc});
+  save();
+  ['e-title','e-url','e-source','e-desc'].forEach(id=>document.getElementById(id).value='');
+  selectedETag='';
+  document.querySelectorAll('#e-tags .tag-pick').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('essay-form').classList.remove('open');
+  renderEssays();
+}
+
+// ── BOOKS ─────────────────────────────────────────
+function filterYear(year,btn){
+  bYear=year;
+  document.querySelectorAll('#yearFilters .f-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBooks();
+}
+function renderYearFilters(){
+  const years=[...new Set(books.map(b=>b.year))].sort((a,b)=>b-a);
+  const container=document.getElementById('yearFilters');
+  const allBtn=container.querySelector('.f-btn');
+  container.innerHTML='';
+  container.appendChild(allBtn);
+  allBtn.className='f-btn'+(bYear==='all'?' active':'');
+  allBtn.onclick=()=>filterYear('all',allBtn);
+  years.forEach(y=>{
+    const btn=document.createElement('button');
+    btn.className='f-btn'+(bYear==y?' active':'');
+    btn.textContent=y;
+    btn.onclick=()=>filterYear(y,btn);
+    container.appendChild(btn);
+  });
+}
+function renderBooks(){
+  let list=[...books];
+  if(bYear!=='all') list=list.filter(b=>b.year==bYear);
+  list.sort((a,b)=>b.year-a.year||b.id-a.id);
+  document.getElementById('book-count').textContent=list.length+' review'+(list.length!==1?'s':'');
+  if(!list.length){
+    document.getElementById('book-cards').innerHTML='<div class="empty">no reviews yet</div>';
+    return;
+  }
+  const grouped={};
+  list.forEach(b=>{if(!grouped[b.year])grouped[b.year]=[];grouped[b.year].push(b);});
+  let html='';
+  Object.keys(grouped).sort((a,b)=>b-a).forEach(year=>{
+    if(bYear==='all') html+=`<div class="year-label">${year}</div>`;
+    grouped[year].forEach(b=>{
+      html+=`<div class="book-card">
+        <div class="book-top">
+          <div class="book-title">${b.title}</div>
+          ${b.verdict?`<span class="verdict verdict-${b.verdict}">${b.verdict==='read'?'read it':'skip it'}</span>`:''}
+        </div>
+        ${b.author?`<div class="book-meta">${b.author} · ${b.year}</div>`:''}
+        ${b.review?`<div class="book-review">${b.review}</div>`:''}
+        ${b.whyRead?`<div class="book-extra"><div class="book-extra-label label-read">read if →</div>${b.whyRead}</div>`:''}
+        ${b.whySkip?`<div class="book-extra"><div class="book-extra-label label-skip">skip if →</div>${b.whySkip}</div>`:''}
+        <div class="book-actions" style="display:${isOwner?'flex':'none'}">
+          <button class="btn-del" onclick="deleteBook(${b.id})">delete</button>
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('book-cards').innerHTML=html;
+}
+
+function pickVerdict(v,btn){
+  selectedVerdict=v;
+  document.querySelectorAll('#b-verdict-row .tag-pick').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function saveBook(){
+  const title=document.getElementById('b-title').value.trim();
+  const author=document.getElementById('b-author').value.trim();
+  const year=parseInt(document.getElementById('b-year').value)||new Date().getFullYear();
+  const review=document.getElementById('b-review').value.trim();
+  const whyRead=document.getElementById('b-why-read').value.trim();
+  const whySkip=document.getElementById('b-why-skip').value.trim();
+  if(!title){alert('Please enter a book title.');return;}
+  books.push({id:nextId++,title,author,year,review,whyRead,whySkip,verdict:selectedVerdict});
+  save();
+  ['b-title','b-author','b-year','b-review','b-why-read','b-why-skip']
+    .forEach(id=>document.getElementById(id).value='');
+  selectedVerdict='';
+  document.querySelectorAll('#b-verdict-row .tag-pick').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('book-form').classList.remove('open');
+  renderYearFilters();
+  renderBooks();
+}
+function deleteBook(id){
+  if(!confirm('Delete this review?'))return;
+  books=books.filter(b=>b.id!==id);
+  save();
+  renderYearFilters();
+  renderBooks();
+}
+
+// ── INIT ─────────────────────────────────────────
+renderEssays();
+renderYearFilters();
+renderBooks();
+</script>
+</body>
+</html>
