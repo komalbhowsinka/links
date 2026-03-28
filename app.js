@@ -51,7 +51,7 @@ function tagHTML(cat) {
 
 let eCat = 'all';
 let isOwner = false;
-let nextId = Date.now();
+let nextId = essays.length > 0 ? Math.max(...essays.map(e => e.id)) + 1 : 1;
 
 /* ── PERSISTENCE ── */
 function save() {
@@ -165,6 +165,7 @@ function renderEssays() {
     byYear[year][month].push(e);
   });
 
+  const ownerMode = isOwner; // capture for use inside template strings
   let html = '';
   Object.keys(byYear).sort((a, b) => b - a).forEach((year, yi) => {
     const yid = 'y-' + yi;
@@ -189,7 +190,7 @@ function renderEssays() {
             <div class="group-body" id="${mid}" style="display:none">`;
 
       byYear[year][month].forEach(e => {
-        const deleteBtn = isOwner
+        const deleteBtn = ownerMode
           ? `<button class="essay-delete" onclick="event.preventDefault();deleteEssay(${e.id})" title="delete essay">✕</button>`
           : '';
         html += `<a class="essay-card" href="${e.url}" target="_blank">
@@ -254,21 +255,34 @@ async function saveEssay() {
   const source   = document.getElementById('e-source').value.trim();
   const desc     = document.getElementById('e-desc').value.trim();
   const category = document.getElementById('e-cat').value.trim();
+  const selMonth = document.getElementById('e-month').value;
+  const selYear  = document.getElementById('e-year').value;
   if (!title || !url || !category) { alert('Please fill in title, URL and category.'); return; }
 
-  const now = new Date();
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let dateLabel;
+  if (selMonth && selYear) {
+    dateLabel = selMonth + ' ' + selYear;
+  } else if (selMonth || selYear) {
+    alert('Please select both a month and a year, or leave both empty for today.');
+    return;
+  } else {
+    const now = new Date();
+    dateLabel = months[now.getMonth()] + ' ' + now.getFullYear();
+  }
   essays.unshift({
     id: nextId++,
     title, url,
     source: source || '—',
     category,
-    dateLabel: months[now.getMonth()] + ' ' + now.getFullYear(),
+    dateLabel,
     desc
   });
   save();
 
   ['e-title','e-url','e-source','e-desc','e-cat'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('e-month').value = '';
+  document.getElementById('e-year').value = '';
   document.getElementById('essay-form').classList.remove('open');
   renderEssays();
 
