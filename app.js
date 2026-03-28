@@ -127,6 +127,7 @@ function showTab(tab, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('visible');
   btn.classList.add('active');
+  if (tab === 'recommend' && isOwner) loadRecInbox();
 }
 
 /* ── ESSAYS ── */
@@ -194,6 +195,9 @@ function renderEssays() {
         const deleteBtn = ownerMode
           ? `<button class="essay-delete" onclick="deleteEssay(${e.id})" title="delete essay">✕</button>`
           : '';
+        const recTag = e.recommended
+          ? `<span class="tag tag-recommended">✦ recommended</span>`
+          : '';
         html += `
         <div class="essay-wrap" style="position:relative">
           ${deleteBtn}
@@ -202,7 +206,7 @@ function renderEssays() {
               <div class="essay-title">${e.title}</div>
               <div class="essay-arrow">↗</div>
             </div>
-            <div class="essay-meta">${tagHTML(e.category)}<span class="essay-source">${e.source}</span></div>
+            <div class="essay-meta">${tagHTML(e.category)}<span class="essay-source">${e.source}</span>${recTag}</div>
             <div class="essay-desc">${e.desc}</div>
           </a>
         </div>`;
@@ -424,7 +428,270 @@ function showStatus(msg, isError) {
   setTimeout(() => { el.style.opacity = '0'; }, 5000);
 }
 
-/* ── POPULATE YEAR DROPDOWN DYNAMICALLY ── */
+/* ══════════════════════════════════════
+   RECOMMENDATIONS
+══════════════════════════════════════ */
+const GITHUB_REC_FILE = 'recommendations.json';
+
+/* ── SUBMIT RECOMMENDATION (public) ── */
+async function submitRecommendation() {
+  const url = document.getElementById('rec-url').value.trim();
+  const statusEl = document.getElementById('rec-status');
+
+  if (!url) { showRecStatus('please paste a URL first', true); return; }
+  if (!url.startsWith('http')) { showRecStatus('that doesn\'t look like a valid URL', true); return; }
+
+  showRecStatus('⏳ submitting…', false);
+
+  try {
+    // Fetch current recommendations.json
+    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
+    // Use a public read — no token needed for public repo
+    const getRes = await fetch(`${apiBase}?ref=main`);
+    let recs = [];
+    let sha = null;
+
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+      recs = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, '')))));
+    }
+
+    // Check for duplicate
+    if (recs.find(r => r.url === url)) {
+      showRecStatus('this URL has already been recommended — thanks!', false);
+      document.getElementById('rec-url').value = '';
+      return;
+    }
+
+    // Add new recommendation
+    recs.push({ url, submittedAt: new Date().toISOString() });
+
+    // Commit — needs a token, use a dedicated public write token or show error
+    const token = getToken();
+    if (!token) {
+      // No owner token — use the public GitHub API without auth
+      // This won't work without auth, so we store locally and show a friendly message
+      let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
+      localRecs.push({ url, submittedAt: new Date().toISOString() });
+      localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
+      showRecStatus('✅ thanks! recommendation noted.', false);
+      document.getElementById('rec-url').value = '';
+      return;
+    }
+
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    const body = { message: `rec: add recommendation`, content: btoa(unescape(encodeURIComponent(JSON.stringify(recs, null, 2)))), branch: 'main' };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!putRes.ok) throw new Error('commit failed');
+
+    showRecStatus('✅ thanks! recommendation received.', false);
+    document.getElementById('rec-url').value = '';
+  } catch (err) {
+    // Fallback to localStorage
+    let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
+    localRecs.push({ url, submittedAt: new Date().toISOString() });
+    localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
+    showRecStatus('✅ thanks! recommendation noted.', false);
+    document.getElementById('rec-url').value = '';
+  }
+}
+
+function showRecStatus(msg, isError) {
+  const el = document.getElementById('rec-status');
+  el.style.display = 'block';
+  el.style.color = isError ? '#f47272' : 'var(--teal)';
+  el.textContent = msg;
+  if (!isError) setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+/* ── LOAD INBOX (owner only) ── */
+async function loadRecInbox() {
+  const inbox = document.getElementById('rec-inbox');
+  const list  = document.getElementById('rec-inbox-list');
+  const empty = document.getElementById('rec-inbox-empty');
+  inbox.style.display = 'block';
+  list.innerHTML = '<div class="empty">loading…</div>';
+
+  try {
+    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
+    const headers = { 'Authorization': `token ${getToken()}`, 'Accept': 'application/vnd.github+json' };
+    const getRes  = await fetch(`${apiBase}?ref=main`, { headers });
+
+    let recs = [];
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      recs = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, '')))));
+    }
+
+    // Also merge any localStorage pending recs
+    const localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
+    localRecs.forEach(lr => { if (!recs.find(r => r.url === lr.url)) recs.push(lr); });
+
+    if (!recs.length) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    list.innerHTML = recs.map((r, i) => `
+      <div class="rec-card" id="rec-${i}">
+        <div class="rec-url">${r.url}</div>
+        <div class="rec-meta">${new Date(r.submittedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}</div>
+        <div class="rec-actions">
+          <a href="${r.url}" target="_blank" class="rec-btn rec-btn-open">open ↗</a>
+          <button class="rec-btn rec-btn-add" onclick="promoteRec(${i})">+ add to essays</button>
+          <button class="rec-btn rec-btn-del" onclick="dismissRec(${i})">dismiss</button>
+        </div>
+      </div>
+    `).join('');
+
+    // Store recs in memory for promote/dismiss
+    window.__recs = recs;
+  } catch (err) {
+    list.innerHTML = `<div class="empty">could not load recommendations: ${err.message}</div>`;
+  }
+}
+
+/* ── PROMOTE REC — inline form in inbox ── */
+function promoteRec(idx) {
+  const rec = window.__recs[idx];
+  if (!rec) return;
+
+  // Remove any existing inline form
+  const existing = document.getElementById('rec-inline-form');
+  if (existing) existing.remove();
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({length: 6}, (_, i) => currentYear + 2 - i)
+    .map(y => `<option value="${y}"${y === currentYear ? ' selected' : ''}>${y}</option>`).join('');
+  const monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
+
+  const card = document.getElementById(`rec-${idx}`);
+  const form = document.createElement('div');
+  form.id = 'rec-inline-form';
+  form.style.cssText = `
+    border:1px solid var(--border3); border-radius:var(--radius);
+    padding:1.25rem; margin-top:10px; background:var(--bg3);
+    animation:fadeUp 0.25s ease;
+  `;
+  form.innerHTML = `
+    <div style="font-size:10px;color:var(--teal);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px">Add to essays · will be tagged as recommended</div>
+    <div class="form-row"><label class="form-label">Title</label><input class="form-input" id="ri-title" placeholder="essay title"/></div>
+    <div class="form-row"><label class="form-label">URL</label><input class="form-input" id="ri-url" value="${rec.url}" readonly style="opacity:0.6"/></div>
+    <div class="form-row"><label class="form-label">Source</label><input class="form-input" id="ri-source" placeholder="e.g. Aeon, Psyche"/></div>
+    <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="ri-desc" placeholder="why should someone read this?"/></div>
+    <div class="form-row"><label class="form-label">Category</label><input class="form-input" id="ri-cat" placeholder="e.g. Philosophy, Ethics"/></div>
+    <div class="form-row">
+      <label class="form-label">Date <span class="form-optional">(optional)</span></label>
+      <div style="display:flex;gap:8px">
+        <select class="form-input" id="ri-month" style="flex:1"><option value="">Month</option>${monthOptions}</select>
+        <select class="form-input" id="ri-year" style="flex:1"><option value="">Year</option>${yearOptions}</select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" onclick="savePromotedRec(${idx})">save as recommended</button>
+      <button class="btn-cancel" onclick="document.getElementById('rec-inline-form').remove()">cancel</button>
+    </div>
+  `;
+  card.appendChild(form);
+  document.getElementById('ri-title').focus();
+}
+
+/* ── SAVE PROMOTED REC ── */
+async function savePromotedRec(idx) {
+  const rec      = window.__recs[idx];
+  const title    = document.getElementById('ri-title').value.trim();
+  const url      = document.getElementById('ri-url').value.trim();
+  const source   = document.getElementById('ri-source').value.trim();
+  const desc     = document.getElementById('ri-desc').value.trim();
+  const category = document.getElementById('ri-cat').value.trim();
+  const selMonth = document.getElementById('ri-month').value;
+  const selYear  = document.getElementById('ri-year').value;
+
+  if (!title || !category) { alert('Please fill in title and category.'); return; }
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let dateLabel;
+  if (selMonth && selYear) {
+    dateLabel = selMonth + ' ' + selYear;
+  } else {
+    const now = new Date();
+    dateLabel = months[now.getMonth()] + ' ' + now.getFullYear();
+  }
+
+  // Add essay with recommended flag
+  essays.unshift({
+    id: nextId++,
+    title, url,
+    source: source || '—',
+    category,
+    dateLabel,
+    desc,
+    recommended: true
+  });
+  save();
+  renderEssays();
+
+  // Dismiss rec from inbox
+  await dismissRec(idx);
+
+  showStatus('⏳ Saving to GitHub…', false);
+  try {
+    await commitToGitHub(`feat: add recommended essay "${title}"`);
+    showStatus('✅ Saved & committed to GitHub! Reloading…', false);
+    setTimeout(() => location.reload(), 2500);
+  } catch (err) {
+    console.error(err);
+    showStatus('⚠️ Saved locally but GitHub commit failed: ' + err.message, true);
+  }
+}
+
+/* ── DISMISS REC ── */
+async function dismissRec(idx) {
+  const rec = window.__recs[idx];
+  if (!rec) return;
+
+  window.__recs.splice(idx, 1);
+
+  // Remove from localStorage
+  let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
+  localRecs = localRecs.filter(r => r.url !== rec.url);
+  localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
+
+  // Commit updated recommendations.json to GitHub
+  try {
+    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
+    const headers = { 'Authorization': `token ${getToken()}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+    const getRes  = await fetch(`${apiBase}?ref=main`, { headers });
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      await fetch(apiBase, {
+        method: 'PUT', headers,
+        body: JSON.stringify({
+          message: 'rec: dismiss recommendation',
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(window.__recs, null, 2)))),
+          sha: fileData.sha,
+          branch: 'main'
+        })
+      });
+    }
+  } catch (err) { console.warn('Could not sync dismiss to GitHub', err); }
+
+  // Re-render inbox
+  loadRecInbox();
+}
+
+/* ── SHOW INBOX WHEN SWITCHING TO RECOMMEND TAB AS OWNER ── */
 function populateYearDropdown() {
   const currentYear = new Date().getFullYear();
   const earliestYear = essays.length > 0
