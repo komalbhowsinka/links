@@ -192,19 +192,20 @@ function renderEssays() {
 
       byYear[year][month].forEach(e => {
         const deleteBtn = ownerMode
-          ? `<button class="essay-delete" onclick="event.preventDefault();event.stopPropagation();deleteEssay(${e.id})" title="delete essay">✕</button>`
+          ? `<button class="essay-delete" onclick="deleteEssay(${e.id})" title="delete essay">✕</button>`
           : '';
-        html += `<a class="essay-card" href="${e.url}" target="_blank">
-          <div class="essay-top">
-            <div class="essay-title">${e.title}</div>
-            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-              ${deleteBtn}
+        html += `
+        <div class="essay-wrap" style="position:relative">
+          ${deleteBtn}
+          <a class="essay-card" href="${e.url}" target="_blank">
+            <div class="essay-top">
+              <div class="essay-title">${e.title}</div>
               <div class="essay-arrow">↗</div>
             </div>
-          </div>
-          <div class="essay-meta">${tagHTML(e.category)}<span class="essay-source">${e.source}</span></div>
-          <div class="essay-desc">${e.desc}</div>
-        </a>`;
+            <div class="essay-meta">${tagHTML(e.category)}<span class="essay-source">${e.source}</span></div>
+            <div class="essay-desc">${e.desc}</div>
+          </a>
+        </div>`;
       });
 
       html += `</div></div>`;
