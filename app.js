@@ -432,51 +432,65 @@ function showStatus(msg, isError) {
    RECOMMENDATIONS
 ══════════════════════════════════════ */
 const GITHUB_REC_FILE = 'recommendations.json';
+let currentRecType = 'essay';
+
+/* ── TYPE SELECTOR ── */
+function selectRecType(type) {
+  currentRecType = type;
+  document.getElementById('rec-essay-fields').style.display = type === 'essay' ? 'block' : 'none';
+  document.getElementById('rec-book-fields').style.display  = type === 'book'  ? 'block' : 'none';
+  document.getElementById('rec-type-essay').classList.toggle('active', type === 'essay');
+  document.getElementById('rec-type-book').classList.toggle('active',  type === 'book');
+}
 
 /* ── SUBMIT RECOMMENDATION (public) ── */
 async function submitRecommendation() {
-  const url = document.getElementById('rec-url').value.trim();
-  const statusEl = document.getElementById('rec-status');
+  let recData = { type: currentRecType, submittedAt: new Date().toISOString() };
 
-  if (!url) { showRecStatus('please paste a URL first', true); return; }
-  if (!url.startsWith('http')) { showRecStatus('that doesn\'t look like a valid URL', true); return; }
+  if (currentRecType === 'essay') {
+    const url = document.getElementById('rec-url').value.trim();
+    if (!url) { showRecStatus('please paste a URL first', true); return; }
+    if (!url.startsWith('http')) { showRecStatus('that doesn\'t look like a valid URL', true); return; }
+    recData.url = url;
+  } else {
+    const title  = document.getElementById('rec-book-title').value.trim();
+    const author = document.getElementById('rec-book-author').value.trim();
+    if (!title)  { showRecStatus('please enter the book title', true); return; }
+    if (!author) { showRecStatus('please enter the author name', true); return; }
+    recData.title  = title;
+    recData.author = author;
+  }
 
   showRecStatus('⏳ submitting…', false);
 
   try {
-    // Fetch current recommendations.json
     const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
-    // Use a public read — no token needed for public repo
-    const getRes = await fetch(`${apiBase}?ref=main`);
+    const getRes  = await fetch(`${apiBase}?ref=main`);
     let recs = [];
-    let sha = null;
+    let sha  = null;
 
     if (getRes.ok) {
       const fileData = await getRes.json();
-      sha = fileData.sha;
+      sha  = fileData.sha;
       recs = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, '')))));
     }
 
-    // Check for duplicate
-    if (recs.find(r => r.url === url)) {
+    // Duplicate check for essays
+    if (currentRecType === 'essay' && recs.find(r => r.url === recData.url)) {
       showRecStatus('this URL has already been recommended — thanks!', false);
       document.getElementById('rec-url').value = '';
       return;
     }
 
-    // Add new recommendation
-    recs.push({ url, submittedAt: new Date().toISOString() });
+    recs.push(recData);
 
-    // Commit — needs a token, use a dedicated public write token or show error
     const token = getToken();
     if (!token) {
-      // No owner token — use the public GitHub API without auth
-      // This won't work without auth, so we store locally and show a friendly message
       let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
-      localRecs.push({ url, submittedAt: new Date().toISOString() });
+      localRecs.push(recData);
       localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
       showRecStatus('✅ thanks! recommendation noted.', false);
-      document.getElementById('rec-url').value = '';
+      clearRecForm();
       return;
     }
 
@@ -485,23 +499,31 @@ async function submitRecommendation() {
       'Accept': 'application/vnd.github+json',
       'Content-Type': 'application/json'
     };
-
-    const body = { message: `rec: add recommendation`, content: btoa(unescape(encodeURIComponent(JSON.stringify(recs, null, 2)))), branch: 'main' };
+    const body = {
+      message: `rec: add ${currentRecType} recommendation`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(recs, null, 2)))),
+      branch: 'main'
+    };
     if (sha) body.sha = sha;
 
     const putRes = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
     if (!putRes.ok) throw new Error('commit failed');
 
     showRecStatus('✅ thanks! recommendation received.', false);
-    document.getElementById('rec-url').value = '';
+    clearRecForm();
   } catch (err) {
-    // Fallback to localStorage
     let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
-    localRecs.push({ url, submittedAt: new Date().toISOString() });
+    localRecs.push(recData);
     localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
     showRecStatus('✅ thanks! recommendation noted.', false);
-    document.getElementById('rec-url').value = '';
+    clearRecForm();
   }
+}
+
+function clearRecForm() {
+  document.getElementById('rec-url').value = '';
+  document.getElementById('rec-book-title').value = '';
+  document.getElementById('rec-book-author').value = '';
 }
 
 function showRecStatus(msg, isError) {
@@ -542,17 +564,22 @@ async function loadRecInbox() {
     }
 
     empty.style.display = 'none';
-    list.innerHTML = recs.map((r, i) => `
+    list.innerHTML = recs.map((r, i) => {
+      const isBook   = r.type === 'book';
+      const label    = isBook ? `📚 ${r.title} · ${r.author}` : `📄 ${r.url}`;
+      const openBtn  = !isBook ? `<a href="${r.url}" target="_blank" class="rec-btn rec-btn-open">open ↗</a>` : '';
+      const addBtn   = !isBook ? `<button class="rec-btn rec-btn-add" onclick="promoteRec(${i})">+ add to essays</button>` : '';
+      return `
       <div class="rec-card" id="rec-${i}">
-        <div class="rec-url">${r.url}</div>
+        <div class="rec-url">${label}</div>
         <div class="rec-meta">${new Date(r.submittedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}</div>
         <div class="rec-actions">
-          <a href="${r.url}" target="_blank" class="rec-btn rec-btn-open">open ↗</a>
-          <button class="rec-btn rec-btn-add" onclick="promoteRec(${i})">+ add to essays</button>
+          ${openBtn}
+          ${addBtn}
           <button class="rec-btn rec-btn-del" onclick="dismissRec(${i})">dismiss</button>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     // Store recs in memory for promote/dismiss
     window.__recs = recs;
