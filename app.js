@@ -61,7 +61,6 @@ function save() {
 /* ── AUTH ── */
 function openLogin() {
   document.getElementById('loginOverlay').classList.add('show');
-  // pre-fill branch if already stored
   document.getElementById('branchInput').value = getBranch();
   document.getElementById('pwInput').focus();
 }
@@ -90,7 +89,6 @@ function tryLogin() {
     return;
   }
 
-  // store in sessionStorage — cleared when tab closes
   sessionStorage.setItem('gh_token', token);
   sessionStorage.setItem('gh_branch', branch);
   isOwner = true;
@@ -105,15 +103,9 @@ function logout() {
 }
 function applyOwnerMode() {
   document.getElementById('ownerBar').classList.toggle('show', isOwner);
-  if (isOwner) {
-    document.getElementById('ownerBranch').textContent = getBranch();
-  }
+  if (isOwner) document.getElementById('ownerBranch').textContent = getBranch();
   document.getElementById('essay-add-wrap').style.display = isOwner ? 'block' : 'none';
   renderEssays();
-  // If owner is on the recommend tab, load the inbox
-  if (isOwner && document.getElementById('tab-recommend').classList.contains('visible')) {
-    loadRecInbox();
-  }
 }
 
 /* ── SECRET LOCK TRIGGER ── */
@@ -131,7 +123,6 @@ function showTab(tab, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('visible');
   btn.classList.add('active');
-  if (tab === 'recommend' && isOwner) loadRecInbox();
 }
 
 /* ── ESSAYS ── */
@@ -171,7 +162,7 @@ function renderEssays() {
     byYear[year][month].push(e);
   });
 
-  const ownerMode = isOwner; // capture for use inside template strings
+  const ownerMode = isOwner;
   let html = '';
   Object.keys(byYear).sort((a, b) => b - a).forEach((year, yi) => {
     const yid = 'y-' + yi;
@@ -203,7 +194,7 @@ function renderEssays() {
           ? `<span class="tag tag-recommended">✦ recommended</span>`
           : '';
         html += `
-        <div class="essay-wrap" style="position:relative">
+        <div class="essay-wrap">
           ${deleteBtn}
           <a class="essay-card" href="${e.url}" target="_blank">
             <div class="essay-top">
@@ -242,7 +233,7 @@ function deleteEssay(id) {
   const essay = essays.find(e => e.id === id);
   if (!essay) return;
   showConfirm(
-    `Delete this essay?`,
+    'Delete this essay?',
     `"${essay.title}" will be permanently removed and committed to GitHub.`,
     async () => {
       essays = essays.filter(e => e.id !== id);
@@ -263,7 +254,6 @@ function deleteEssay(id) {
 
 /* ── CONFIRM MODAL ── */
 function showConfirm(title, subtitle, onConfirm) {
-  // Remove any existing modal
   const existing = document.getElementById('confirm-modal');
   if (existing) existing.remove();
 
@@ -282,35 +272,29 @@ function showConfirm(title, subtitle, onConfirm) {
       animation:fadeUp 0.25s ease;
     ">
       <div style="font-family:var(--font-serif);font-size:20px;font-style:italic;color:var(--white);margin-bottom:8px">${title}</div>
-      <div style="font-size:12px;color:var(--white4);line-height:1.6;margin-bottom:1.5rem;letter-spacing:0.02em">${subtitle}</div>
+      <div style="font-size:12px;color:var(--white4);line-height:1.6;margin-bottom:1.5rem">${subtitle}</div>
       <div style="display:flex;gap:8px">
         <button id="confirm-yes" style="
           flex:1; padding:10px; background:#7a1a1a; color:#f47272;
           border:1px solid #f4727244; border-radius:var(--radius-sm);
-          font-family:var(--font-sans); font-size:12px; cursor:pointer;
-          transition:all 0.18s; letter-spacing:0.04em;
+          font-family:var(--font-sans); font-size:12px; cursor:pointer; letter-spacing:0.04em;
         ">yes, delete</button>
         <button id="confirm-no" style="
           padding:10px 16px; background:transparent; color:var(--white4);
           border:1px solid var(--border2); border-radius:var(--radius-sm);
           font-family:var(--font-sans); font-size:12px; cursor:pointer;
-          transition:background 0.15s;
         ">cancel</button>
       </div>
     </div>
   `;
 
   document.body.appendChild(modal);
-
-  document.getElementById('confirm-yes').onclick = () => {
-    modal.remove();
-    onConfirm();
-  };
-  document.getElementById('confirm-no').onclick = () => modal.remove();
+  document.getElementById('confirm-yes').onclick = () => { modal.remove(); onConfirm(); };
+  document.getElementById('confirm-no').onclick  = () => modal.remove();
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
 }
 
-/* ── SAVE ESSAY + COMMIT TO GITHUB ── */
+/* ── SAVE ESSAY ── */
 async function saveEssay() {
   const title    = document.getElementById('e-title').value.trim();
   const url      = document.getElementById('e-url').value.trim();
@@ -332,19 +316,13 @@ async function saveEssay() {
     const now = new Date();
     dateLabel = months[now.getMonth()] + ' ' + now.getFullYear();
   }
-  essays.unshift({
-    id: nextId++,
-    title, url,
-    source: source || '—',
-    category,
-    dateLabel,
-    desc
-  });
+
+  essays.unshift({ id: nextId++, title, url, source: source || '—', category, dateLabel, desc });
   save();
 
   ['e-title','e-url','e-source','e-desc','e-cat'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('e-month').value = '';
-  document.getElementById('e-year').value = '';
+  document.getElementById('e-year').value  = '';
   document.getElementById('essay-form').classList.remove('open');
   renderEssays();
 
@@ -403,9 +381,8 @@ function rebuildIndexHtml(html) {
   const start = html.indexOf(START_MARKER);
   const end   = html.indexOf(END_MARKER) + END_MARKER.length;
   if (start === -1 || end < END_MARKER.length) throw new Error('Could not find essay markers in index.html');
-  const serialized = JSON.stringify(essays, null, 2);
   return html.slice(0, start)
-    + START_MARKER + '\n  let essays = ' + serialized + ';\n  ' + END_MARKER
+    + START_MARKER + '\n  let essays = ' + JSON.stringify(essays, null, 2) + ';\n  ' + END_MARKER
     + html.slice(end);
 }
 
@@ -433,13 +410,11 @@ function showStatus(msg, isError) {
 }
 
 /* ══════════════════════════════════════
-   RECOMMENDATIONS
+   RECOMMENDATIONS — via Formspree
 ══════════════════════════════════════ */
-const GITHUB_REC_FILE  = 'recommendations.json';
-const FORMSPREE_URL    = 'https://formspree.io/f/mykbeybk';
-let currentRecType = 'essay';
+const FORMSPREE_URL = 'https://formspree.io/f/mykbeybk';
+let currentRecType  = 'essay';
 
-/* ── TYPE SELECTOR ── */
 function selectRecType(type) {
   currentRecType = type;
   document.getElementById('rec-essay-fields').style.display = type === 'essay' ? 'block' : 'none';
@@ -448,7 +423,6 @@ function selectRecType(type) {
   document.getElementById('rec-type-book').classList.toggle('active',  type === 'book');
 }
 
-/* ── SUBMIT RECOMMENDATION (public) — via Formspree ── */
 async function submitRecommendation() {
   let payload = { type: currentRecType };
 
@@ -474,9 +448,7 @@ async function submitRecommendation() {
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(payload)
     });
-
     if (!res.ok) throw new Error('Formspree submission failed');
-
     showRecStatus('✅ thanks! recommendation received.', false);
     clearRecForm();
   } catch (err) {
@@ -486,217 +458,30 @@ async function submitRecommendation() {
 }
 
 function clearRecForm() {
-  document.getElementById('rec-url').value = '';
-  document.getElementById('rec-book-title').value = '';
-  document.getElementById('rec-book-author').value = '';
+  document.getElementById('rec-url').value          = '';
+  document.getElementById('rec-book-title').value   = '';
+  document.getElementById('rec-book-author').value  = '';
 }
 
 function showRecStatus(msg, isError) {
   const el = document.getElementById('rec-status');
   el.style.display = 'block';
-  el.style.color = isError ? '#f47272' : 'var(--teal)';
-  el.textContent = msg;
+  el.style.color   = isError ? '#f47272' : 'var(--teal)';
+  el.textContent   = msg;
   if (!isError) setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
 
-/* ── LOAD INBOX (owner only) ── */
-async function loadRecInbox() {
-  const inbox = document.getElementById('rec-inbox');
-  const list  = document.getElementById('rec-inbox-list');
-  const empty = document.getElementById('rec-inbox-empty');
-  inbox.style.display = 'block';
-  list.innerHTML = '<div class="empty">loading…</div>';
-
-  try {
-    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
-    const headers = { 'Authorization': `token ${getToken()}`, 'Accept': 'application/vnd.github+json' };
-    const getRes  = await fetch(`${apiBase}?ref=main`, { headers });
-
-    let recs = [];
-    if (getRes.ok) {
-      const fileData = await getRes.json();
-      recs = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, '')))));
-    }
-
-    // Also merge any localStorage pending recs
-    const localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
-    localRecs.forEach(lr => { if (!recs.find(r => r.url === lr.url)) recs.push(lr); });
-
-    if (!recs.length) {
-      list.innerHTML = '';
-      empty.style.display = 'block';
-      return;
-    }
-
-    empty.style.display = 'none';
-    list.innerHTML = recs.map((r, i) => {
-      const isBook   = r.type === 'book';
-      const label    = isBook ? `📚 ${r.title} · ${r.author}` : `📄 ${r.url}`;
-      const openBtn  = !isBook ? `<a href="${r.url}" target="_blank" class="rec-btn rec-btn-open">open ↗</a>` : '';
-      const addBtn   = !isBook ? `<button class="rec-btn rec-btn-add" onclick="promoteRec(${i})">+ add to essays</button>` : '';
-      return `
-      <div class="rec-card" id="rec-${i}">
-        <div class="rec-url">${label}</div>
-        <div class="rec-meta">${new Date(r.submittedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}</div>
-        <div class="rec-actions">
-          ${openBtn}
-          ${addBtn}
-          <button class="rec-btn rec-btn-del" onclick="dismissRec(${i})">dismiss</button>
-        </div>
-      </div>`;
-    }).join('');
-
-    // Store recs in memory for promote/dismiss
-    window.__recs = recs;
-  } catch (err) {
-    list.innerHTML = `<div class="empty">could not load recommendations: ${err.message}</div>`;
-  }
-}
-
-/* ── PROMOTE REC — inline form in inbox ── */
-function promoteRec(idx) {
-  const rec = window.__recs[idx];
-  if (!rec) return;
-
-  // Remove any existing inline form
-  const existing = document.getElementById('rec-inline-form');
-  if (existing) existing.remove();
-
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({length: 6}, (_, i) => currentYear + 2 - i)
-    .map(y => `<option value="${y}"${y === currentYear ? ' selected' : ''}>${y}</option>`).join('');
-  const monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
-
-  const card = document.getElementById(`rec-${idx}`);
-  const form = document.createElement('div');
-  form.id = 'rec-inline-form';
-  form.style.cssText = `
-    border:1px solid var(--border3); border-radius:var(--radius);
-    padding:1.25rem; margin-top:10px; background:var(--bg3);
-    animation:fadeUp 0.25s ease;
-  `;
-  form.innerHTML = `
-    <div style="font-size:10px;color:var(--teal);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px">Add to essays · will be tagged as recommended</div>
-    <div class="form-row"><label class="form-label">Title</label><input class="form-input" id="ri-title" placeholder="essay title"/></div>
-    <div class="form-row"><label class="form-label">URL</label><input class="form-input" id="ri-url" value="${rec.url}" readonly style="opacity:0.6"/></div>
-    <div class="form-row"><label class="form-label">Source</label><input class="form-input" id="ri-source" placeholder="e.g. Aeon, Psyche"/></div>
-    <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="ri-desc" placeholder="why should someone read this?"/></div>
-    <div class="form-row"><label class="form-label">Category</label><input class="form-input" id="ri-cat" placeholder="e.g. Philosophy, Ethics"/></div>
-    <div class="form-row">
-      <label class="form-label">Date <span class="form-optional">(optional)</span></label>
-      <div style="display:flex;gap:8px">
-        <select class="form-input" id="ri-month" style="flex:1"><option value="">Month</option>${monthOptions}</select>
-        <select class="form-input" id="ri-year" style="flex:1"><option value="">Year</option>${yearOptions}</select>
-      </div>
-    </div>
-    <div class="form-actions">
-      <button class="btn-save" onclick="savePromotedRec(${idx})">save as recommended</button>
-      <button class="btn-cancel" onclick="document.getElementById('rec-inline-form').remove()">cancel</button>
-    </div>
-  `;
-  card.appendChild(form);
-  document.getElementById('ri-title').focus();
-}
-
-/* ── SAVE PROMOTED REC ── */
-async function savePromotedRec(idx) {
-  const rec      = window.__recs[idx];
-  const title    = document.getElementById('ri-title').value.trim();
-  const url      = document.getElementById('ri-url').value.trim();
-  const source   = document.getElementById('ri-source').value.trim();
-  const desc     = document.getElementById('ri-desc').value.trim();
-  const category = document.getElementById('ri-cat').value.trim();
-  const selMonth = document.getElementById('ri-month').value;
-  const selYear  = document.getElementById('ri-year').value;
-
-  if (!title || !category) { alert('Please fill in title and category.'); return; }
-
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let dateLabel;
-  if (selMonth && selYear) {
-    dateLabel = selMonth + ' ' + selYear;
-  } else {
-    const now = new Date();
-    dateLabel = months[now.getMonth()] + ' ' + now.getFullYear();
-  }
-
-  // Add essay with recommended flag
-  essays.unshift({
-    id: nextId++,
-    title, url,
-    source: source || '—',
-    category,
-    dateLabel,
-    desc,
-    recommended: true
-  });
-  save();
-  renderEssays();
-
-  // Dismiss rec from inbox
-  await dismissRec(idx);
-
-  showStatus('⏳ Saving to GitHub…', false);
-  try {
-    await commitToGitHub(`feat: add recommended essay "${title}"`);
-    showStatus('✅ Saved & committed to GitHub! Reloading…', false);
-    setTimeout(() => location.reload(), 2500);
-  } catch (err) {
-    console.error(err);
-    showStatus('⚠️ Saved locally but GitHub commit failed: ' + err.message, true);
-  }
-}
-
-/* ── DISMISS REC ── */
-async function dismissRec(idx) {
-  const rec = window.__recs[idx];
-  if (!rec) return;
-
-  window.__recs.splice(idx, 1);
-
-  // Remove from localStorage
-  let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
-  localRecs = localRecs.filter(r => r.url !== rec.url);
-  localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
-
-  // Commit updated recommendations.json to GitHub
-  try {
-    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
-    const headers = { 'Authorization': `token ${getToken()}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
-    const getRes  = await fetch(`${apiBase}?ref=main`, { headers });
-    if (getRes.ok) {
-      const fileData = await getRes.json();
-      await fetch(apiBase, {
-        method: 'PUT', headers,
-        body: JSON.stringify({
-          message: 'rec: dismiss recommendation',
-          content: btoa(unescape(encodeURIComponent(JSON.stringify(window.__recs, null, 2)))),
-          sha: fileData.sha,
-          branch: 'main'
-        })
-      });
-    }
-  } catch (err) { console.warn('Could not sync dismiss to GitHub', err); }
-
-  // Re-render inbox
-  loadRecInbox();
-}
-
-/* ── SHOW INBOX WHEN SWITCHING TO RECOMMEND TAB AS OWNER ── */
+/* ── POPULATE YEAR DROPDOWN ── */
 function populateYearDropdown() {
-  const currentYear = new Date().getFullYear();
-  const earliestYear = essays.length > 0
+  const currentYear   = new Date().getFullYear();
+  const earliestYear  = essays.length > 0
     ? Math.min(...essays.map(e => parseInt((e.dateLabel || '').split(' ')[1]) || currentYear))
     : currentYear;
-  const startYear = Math.min(earliestYear, currentYear - 1);
-  const endYear   = currentYear + 2;
-  const select    = document.getElementById('e-year');
+  const select = document.getElementById('e-year');
   select.innerHTML = '<option value="">Year</option>';
-  for (let y = endYear; y >= startYear; y--) {
+  for (let y = currentYear + 2; y >= Math.min(earliestYear, currentYear - 1); y--) {
     const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = y;
+    opt.value = y; opt.textContent = y;
     select.appendChild(opt);
   }
 }
