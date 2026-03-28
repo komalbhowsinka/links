@@ -13,7 +13,7 @@ const GITHUB_REPO  = "links";
 const GITHUB_FILE  = "index.html";
 
 function getToken()  { return sessionStorage.getItem('gh_token') || ''; }
-function getBranch() { return sessionStorage.getItem('gh_branch') || 'qa'; }
+function getBranch() { return sessionStorage.getItem('gh_branch') || 'main'; }
 
 // essays declared in index.html as single source of truth.
 // localStorage overrides if present.
@@ -74,7 +74,7 @@ function closeLogin() {
 function tryLogin() {
   const pw     = document.getElementById('pwInput').value;
   const token  = document.getElementById('tokenInput').value.trim();
-  const branch = document.getElementById('branchInput').value.trim() || 'qa';
+  const branch = document.getElementById('branchInput').value.trim() || 'main';
 
   if (pw !== OWNER_PASSWORD) {
     document.getElementById('loginErr').textContent = 'incorrect password';
