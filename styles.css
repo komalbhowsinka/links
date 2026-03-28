@@ -1,6 +1,5 @@
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 :root {
-  /* Blush & slate — soft rose-white with deep plum-slate, 2026 */
   --bg:         #f7f0f2;
   --bg2:        #ecdde5;
   --bg3:        #e0ccd6;
@@ -21,6 +20,8 @@
   --font-serif: 'Cormorant Garamond',Georgia,serif;
   --font-sans:  'Space Grotesk',system-ui,sans-serif;
 }
+
+/* ── BASE ── */
 html { scroll-behavior:smooth; }
 body { background:var(--bg); color:var(--white); font-family:var(--font-sans); font-weight:300; min-height:100vh; overflow-x:hidden; }
 body::before {
@@ -55,7 +56,7 @@ body::before {
 .sec-title { font-family:var(--font-serif); font-size:28px; font-weight:500; font-style:italic; color:var(--white); margin-bottom:4px; line-height:1.1; }
 .sec-sub { font-size:11px; color:var(--white4); letter-spacing:0.08em; text-transform:uppercase; }
 
-/* ── ABOUT TAB ── */
+/* ── ABOUT ── */
 .about-card { border:1px solid var(--border2); border-radius:var(--radius); padding:1.75rem; background:var(--bg2); margin-bottom:16px; }
 .about-bio { font-family:var(--font-serif); font-size:17px; line-height:1.8; color:var(--white2); margin-bottom:1.5rem; font-style:italic; }
 .about-links { display:flex; flex-direction:column; gap:10px; }
@@ -74,9 +75,6 @@ body::before {
 .divider { height:1px; background:var(--border2); margin:1.5rem 0 1rem; }
 .count { font-size:11px; color:var(--white4); margin-bottom:1rem; letter-spacing:0.06em; text-transform:uppercase; }
 
-.year-label { font-size:10px; color:var(--teal); letter-spacing:0.12em; text-transform:uppercase; margin:1.5rem 0 0.75rem; display:flex; align-items:center; gap:10px; font-weight:500; }
-.year-label::after { content:''; flex:1; height:1px; background:var(--border2); }
-
 /* ── COLLAPSIBLE GROUPS ── */
 .group-year { margin-bottom:8px; border:1px solid var(--border2); border-radius:var(--radius); overflow:hidden; }
 .group-year-btn { width:100%; display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--bg2); border:none; cursor:pointer; font-family:var(--font-sans); font-size:13px; font-weight:500; color:var(--white); text-align:left; transition:background 0.15s; }
@@ -90,7 +88,9 @@ body::before {
 .group-count { margin-left:auto; font-size:10px; color:var(--white4); font-weight:300; }
 
 /* ── ESSAY CARDS ── */
-.essay-card { display:block; text-decoration:none; border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.25rem; margin-bottom:10px; background:var(--bg2); transition:all 0.2s; position:relative; overflow:hidden; }
+.essay-wrap { position:relative; margin-bottom:10px; }
+.essay-wrap .essay-card { margin-bottom:0; }
+.essay-card { display:block; text-decoration:none; border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.25rem; background:var(--bg2); transition:all 0.2s; position:relative; overflow:hidden; }
 .essay-card::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(56,189,248,0.04),transparent); opacity:0; transition:opacity 0.2s; }
 .essay-card:hover { border-color:var(--border3); background:var(--bg3); transform:translateY(-1px); box-shadow:0 8px 32px rgba(0,0,0,0.25); }
 .essay-card:hover::after { opacity:1; }
@@ -98,12 +98,18 @@ body::before {
 .essay-title { font-family:var(--font-serif); font-size:16px; font-weight:500; color:var(--white); line-height:1.45; }
 .essay-arrow { font-size:13px; color:var(--teal); flex-shrink:0; margin-top:3px; }
 .essay-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
-.tag { font-size:9px; padding:3px 10px; border-radius:20px; border:1px solid rgba(148,163,184,0.25); letter-spacing:0.06em; text-transform:uppercase; font-weight:400; color:var(--white3); background:rgba(148,163,184,0.06); }
 .essay-source { font-size:10px; color:var(--white4); letter-spacing:0.04em; }
-.essay-date { font-size:10px; color:var(--white4); }
 .essay-desc { font-size:12px; color:var(--white3); line-height:1.7; }
 
-/* ── ADD FORMS ── */
+/* ── TAGS ── */
+.tag { font-size:9px; padding:3px 10px; border-radius:20px; border:1px solid rgba(148,163,184,0.25); letter-spacing:0.06em; text-transform:uppercase; font-weight:400; color:var(--white3); background:rgba(148,163,184,0.06); }
+.tag-recommended { border-color:#f472b644 !important; color:#f472b6 !important; background:#f472b611 !important; }
+
+/* ── ESSAY DELETE BUTTON ── */
+.essay-delete { position:absolute; top:10px; right:10px; z-index:10; background:var(--bg3); border:1px solid var(--border2); border-radius:6px; color:var(--white4); font-size:10px; padding:3px 7px; cursor:pointer; transition:all 0.18s; line-height:1; }
+.essay-delete:hover { background:#3e1a1a; border-color:#f4727244; color:#f47272; }
+
+/* ── FORMS ── */
 .add-toggle { display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border:1px dashed var(--border2); border-radius:var(--radius); font-size:11px; font-family:var(--font-sans); color:var(--white4); background:transparent; cursor:pointer; width:100%; margin-top:8px; transition:all 0.18s; letter-spacing:0.06em; text-transform:uppercase; }
 .add-toggle:hover { border-color:var(--border3); color:var(--teal); background:var(--teal-dim); }
 .add-form { border:1px solid var(--border3); border-radius:var(--radius); padding:1.5rem; margin-top:10px; background:var(--bg2); display:none; animation:fadeUp 0.25s ease; }
@@ -111,28 +117,15 @@ body::before {
 .form-row { margin-bottom:14px; }
 .form-label { font-size:10px; color:var(--white4); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; display:block; }
 .form-optional { color:var(--white4); opacity:0.55; }
-.form-input,.form-textarea,select.form-input { width:100%; padding:9px 12px; border:1px solid var(--border2); border-radius:var(--radius-sm); background:var(--bg3); color:var(--white); font-family:var(--font-sans); font-size:13px; font-weight:300; outline:none; transition:border-color 0.18s; appearance:none; }
-.form-input::placeholder,.form-textarea::placeholder { color:var(--white4); }
-.form-input:focus,.form-textarea:focus,select.form-input:focus { border-color:var(--teal2); }
+.form-input, .form-textarea, select.form-input { width:100%; padding:9px 12px; border:1px solid var(--border2); border-radius:var(--radius-sm); background:var(--bg3); color:var(--white); font-family:var(--font-sans); font-size:13px; font-weight:300; outline:none; transition:border-color 0.18s; appearance:none; }
+.form-input::placeholder, .form-textarea::placeholder { color:var(--white4); }
+.form-input:focus, .form-textarea:focus, select.form-input:focus { border-color:var(--teal2); }
 .form-textarea { resize:vertical; min-height:72px; line-height:1.6; }
-.tag-row { display:flex; flex-wrap:wrap; gap:7px; }
-.tag-pick { padding:5px 13px; border-radius:20px; border:1px solid var(--border2); font-size:10px; font-family:var(--font-sans); background:transparent; color:var(--white3); cursor:pointer; transition:all 0.18s; letter-spacing:0.06em; text-transform:uppercase; }
-.tag-pick:hover { border-color:var(--border3); color:var(--teal); }
-.tag-pick.selected { background:var(--teal2); color:#fff; border-color:var(--teal2); }
 .form-actions { display:flex; gap:8px; margin-top:6px; }
 .btn-save { flex:1; padding:10px; background:var(--teal2); color:#fff; border:none; border-radius:var(--radius-sm); font-family:var(--font-sans); font-size:12px; font-weight:400; cursor:pointer; transition:all 0.18s; letter-spacing:0.04em; box-shadow:0 0 14px var(--teal-glow); }
 .btn-save:hover { background:var(--teal); box-shadow:0 0 22px var(--teal-glow); }
 .btn-cancel { padding:10px 16px; background:transparent; color:var(--white4); border:1px solid var(--border2); border-radius:var(--radius-sm); font-family:var(--font-sans); font-size:12px; cursor:pointer; transition:background 0.15s; }
 .btn-cancel:hover { background:var(--bg3); }
-
-/* ── ESSAY DELETE BUTTON ── */
-.essay-wrap { position:relative; margin-bottom:10px; }
-.essay-wrap .essay-card { margin-bottom:0; }
-.essay-delete { position:absolute; top:10px; right:10px; z-index:10; background:var(--bg3); border:1px solid var(--border2); border-radius:6px; color:var(--white4); font-size:10px; padding:3px 7px; cursor:pointer; transition:all 0.18s; line-height:1; }
-.essay-delete:hover { background:#3e1a1a; border-color:#f4727244; color:#f47272; }
-
-/* ── EMPTY ── */
-.empty { text-align:center; padding:3rem 1rem; font-size:12px; color:var(--white4); letter-spacing:0.04em; }
 
 /* ── OWNER BAR ── */
 .owner-bar { display:none; align-items:center; justify-content:space-between; padding:9px 16px; background:var(--teal-dim); border:1px solid var(--border3); border-radius:var(--radius-sm); margin-bottom:2rem; font-size:11px; color:var(--teal); letter-spacing:0.06em; }
@@ -149,23 +142,16 @@ body::before {
 .login-err { font-size:11px; color:#f47272; margin-top:8px; display:none; letter-spacing:0.04em; }
 .login-actions { display:flex; gap:8px; margin-top:1rem; }
 
-.tag-recommended { border-color:#f472b644 !important; color:#f472b6 !important; background:#f472b611 !important; }
+/* ── EMPTY STATE ── */
+.empty { text-align:center; padding:3rem 1rem; font-size:12px; color:var(--white4); letter-spacing:0.04em; }
 
-/* ── REC TYPE BUTTONS ── */
+/* ── RECOMMEND TAB ── */
+.rec-intro { font-size:14px; margin-bottom:1.25rem; }
+.rec-status-msg { display:none; margin-top:12px; font-size:11px; letter-spacing:0.04em; }
+.form-date-row { display:flex; gap:8px; }
 .rec-type-btn { flex:1; padding:9px 12px; border:1px solid var(--border2); border-radius:var(--radius-sm); background:transparent; color:var(--white3); font-family:var(--font-sans); font-size:11px; cursor:pointer; transition:all 0.18s; letter-spacing:0.04em; }
 .rec-type-btn:hover { background:var(--bg3); border-color:var(--border3); }
 .rec-type-btn.active { background:var(--teal2); color:#fff; border-color:var(--teal2); box-shadow:0 0 14px var(--teal-glow); }
-
-/* ── RECOMMENDATION CARDS ── */
-.rec-card { border:1px solid var(--border2); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:10px; background:var(--bg2); }
-.rec-url { font-size:12px; color:var(--teal); word-break:break-all; margin-bottom:4px; }
-.rec-meta { font-size:10px; color:var(--white4); letter-spacing:0.04em; margin-bottom:10px; }
-.rec-actions { display:flex; gap:8px; flex-wrap:wrap; }
-.rec-btn { font-size:10px; padding:4px 12px; border-radius:6px; cursor:pointer; font-family:var(--font-sans); letter-spacing:0.04em; text-decoration:none; border:1px solid var(--border2); background:transparent; color:var(--white3); transition:all 0.18s; display:inline-flex; align-items:center; }
-.rec-btn:hover { background:var(--bg3); }
-.rec-btn-add { background:var(--teal-dim); color:var(--teal); border-color:var(--border3); }
-.rec-btn-add:hover { background:var(--teal2); color:#fff; }
-.rec-btn-del:hover { background:#3e1a1a; border-color:#f4727244; color:#f47272; }
 
 /* ── FOOTER ── */
 .footer { text-align:center; font-size:11px; color:var(--white4); margin-top:3rem; letter-spacing:0.06em; user-select:none; }
