@@ -83,6 +83,21 @@ body::before {
 .divider { height:1px; background:var(--border2); margin:1.5rem 0 1rem; }
 .count { font-size:11px; color:var(--white4); margin-bottom:1rem; letter-spacing:0.06em; text-transform:uppercase; }
 
+.year-label { font-size:10px; color:var(--teal); letter-spacing:0.12em; text-transform:uppercase; margin:1.5rem 0 0.75rem; display:flex; align-items:center; gap:10px; font-weight:500; }
+.year-label::after { content:''; flex:1; height:1px; background:var(--border2); }
+
+/* ── COLLAPSIBLE GROUPS ── */
+.group-year { margin-bottom:8px; border:1px solid var(--border2); border-radius:var(--radius); overflow:hidden; }
+.group-year-btn { width:100%; display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--bg2); border:none; cursor:pointer; font-family:var(--font-sans); font-size:13px; font-weight:500; color:var(--white); text-align:left; transition:background 0.15s; }
+.group-year-btn:hover { background:var(--bg3); }
+.group-body { display:block; padding:0 10px 10px; }
+.group-month { margin-top:10px; border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; }
+.group-month-btn { width:100%; display:flex; align-items:center; gap:8px; padding:9px 14px; background:var(--bg3); border:none; cursor:pointer; font-family:var(--font-sans); font-size:11px; font-weight:400; color:var(--white2); text-align:left; transition:background 0.15s; text-transform:uppercase; letter-spacing:0.06em; }
+.group-month-btn:hover { background:var(--bg4); }
+.group-body .group-body { padding:8px 8px 4px; }
+.group-chevron { font-size:11px; color:var(--teal); width:12px; flex-shrink:0; }
+.group-count { margin-left:auto; font-size:10px; color:var(--white4); font-weight:300; }
+
 /* ── ESSAY CARDS ── */
 .essay-card { display:block; text-decoration:none; border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.25rem; margin-bottom:10px; background:var(--bg2); transition:all 0.2s; position:relative; overflow:hidden; }
 .essay-card::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(56,189,248,0.04),transparent); opacity:0; transition:opacity 0.2s; }
@@ -383,12 +398,60 @@ function renderEssays(){
   document.getElementById('essay-count').textContent=list.length+' essay'+(list.length!==1?'s':'');
   list.sort((a,b)=>b.id-a.id);
   if(!list.length){document.getElementById('essay-cards').innerHTML='<div class="empty">nothing here yet</div>';return;}
-  document.getElementById('essay-cards').innerHTML=list.map(e=>`
-    <a class="essay-card" href="${e.url}" target="_blank">
-      <div class="essay-top"><div class="essay-title">${e.title}</div><div class="essay-arrow">↗</div></div>
-      <div class="essay-meta">${tagHTML(e.category)}<span class="essay-source">${e.source}</span><span class="essay-date">${e.dateLabel}</span></div>
-      <div class="essay-desc">${e.desc}</div>
-    </a>`).join('');
+
+  // group by year then month
+  const byYear={};
+  list.forEach(e=>{
+    const parts=(e.dateLabel||'Undated').split(' ');
+    const month=parts.length===2?parts[0]:'Undated';
+    const year=parts.length===2?parts[1]:'Undated';
+    if(!byYear[year]) byYear[year]={};
+    if(!byYear[year][month]) byYear[year][month]=[];
+    byYear[year][month].push(e);
+  });
+
+  let html='';
+  Object.keys(byYear).sort((a,b)=>b-a).forEach((year,yi)=>{
+    const yid='y-'+yi;
+    html+=`
+      <div class="group-year">
+        <button class="group-year-btn" onclick="toggleGroup('${yid}')">
+          <span class="group-chevron" id="chev-${yid}">▸</span>
+          <span>${year}</span>
+          <span class="group-count">${Object.values(byYear[year]).flat().length} essays</span>
+        </button>
+        <div class="group-body" id="${yid}" style="display:none">`;
+    Object.keys(byYear[year]).forEach((month,mi)=>{
+      const mid=yid+'-m'+mi;
+      html+=`
+          <div class="group-month">
+            <button class="group-month-btn" onclick="toggleGroup('${mid}')">
+              <span class="group-chevron" id="chev-${mid}">▸</span>
+              <span>${month}</span>
+              <span class="group-count">${byYear[year][month].length}</span>
+            </button>
+            <div class="group-body" id="${mid}" style="display:none">`;
+      byYear[year][month].forEach(e=>{
+        html+=`<a class="essay-card" href="${e.url}" target="_blank">
+          <div class="essay-top"><div class="essay-title">${e.title}</div><div class="essay-arrow">↗</div></div>
+          <div class="essay-meta">${tagHTML(e.category)}<span class="essay-source">${e.source}</span></div>
+          <div class="essay-desc">${e.desc}</div>
+        </a>`;
+      });
+      html+=`</div></div>`;
+    });
+    html+=`</div></div>`;
+  });
+
+  document.getElementById('essay-cards').innerHTML=html;
+}
+
+function toggleGroup(id){
+  const body=document.getElementById(id);
+  const chev=document.getElementById('chev-'+id);
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  chev.textContent=open?'▸':'▾';
 }
 function toggleForm(id){ document.getElementById(id).classList.toggle('open'); }
 function saveEssay(){
