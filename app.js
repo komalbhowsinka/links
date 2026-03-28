@@ -6,7 +6,7 @@ const OWNER_PASSWORD = "outlandish_humor";
 /* ══════════════════════════════════════
    GITHUB CONFIG — replace token below
 ══════════════════════════════════════ */
-const GITHUB_TOKEN  = "YOUR_GITHUB_TOKEN_HERE";
+const GITHUB_TOKEN  = "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";
 const GITHUB_OWNER  = "komalbhowsinka";
 const GITHUB_REPO   = "links";
 const GITHUB_BRANCH = "qa";
