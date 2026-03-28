@@ -96,8 +96,6 @@ function tryLogin() {
   isOwner = true;
   closeLogin();
   applyOwnerMode();
-  // Sync any localStorage recs to GitHub in the background
-  syncLocalRecs();
 }
 function logout() {
   isOwner = false;
@@ -115,41 +113,6 @@ function applyOwnerMode() {
   // If owner is on the recommend tab, load the inbox
   if (isOwner && document.getElementById('tab-recommend').classList.contains('visible')) {
     loadRecInbox();
-  }
-}
-
-/* ── SYNC LOCAL RECS TO GITHUB ON LOGIN ── */
-async function syncLocalRecs() {
-  const localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
-  if (!localRecs.length) return;
-  try {
-    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
-    const headers = { 'Authorization': `token ${getToken()}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
-    const getRes  = await fetch(`${apiBase}?ref=main`, { headers });
-    let recs = [];
-    let sha  = null;
-    if (getRes.ok) {
-      const fileData = await getRes.json();
-      sha  = fileData.sha;
-      recs = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, '')))));
-    }
-    // Merge — avoid duplicates
-    localRecs.forEach(lr => {
-      const isDup = lr.url
-        ? recs.find(r => r.url === lr.url)
-        : recs.find(r => r.title === lr.title && r.author === lr.author);
-      if (!isDup) recs.push(lr);
-    });
-    const body = {
-      message: 'rec: sync local recommendations',
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(recs, null, 2)))),
-      branch: 'main'
-    };
-    if (sha) body.sha = sha;
-    await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
-    localStorage.removeItem('oh_pending_recs');
-  } catch (err) {
-    console.warn('Could not sync local recs to GitHub', err);
   }
 }
 
@@ -472,7 +435,8 @@ function showStatus(msg, isError) {
 /* ══════════════════════════════════════
    RECOMMENDATIONS
 ══════════════════════════════════════ */
-const GITHUB_REC_FILE = 'recommendations.json';
+const GITHUB_REC_FILE  = 'recommendations.json';
+const FORMSPREE_URL    = 'https://formspree.io/f/mykbeybk';
 let currentRecType = 'essay';
 
 /* ── TYPE SELECTOR ── */
@@ -484,80 +448,40 @@ function selectRecType(type) {
   document.getElementById('rec-type-book').classList.toggle('active',  type === 'book');
 }
 
-/* ── SUBMIT RECOMMENDATION (public) ── */
+/* ── SUBMIT RECOMMENDATION (public) — via Formspree ── */
 async function submitRecommendation() {
-  let recData = { type: currentRecType, submittedAt: new Date().toISOString() };
+  let payload = { type: currentRecType };
 
   if (currentRecType === 'essay') {
     const url = document.getElementById('rec-url').value.trim();
     if (!url) { showRecStatus('please paste a URL first', true); return; }
     if (!url.startsWith('http')) { showRecStatus('that doesn\'t look like a valid URL', true); return; }
-    recData.url = url;
+    payload.url = url;
   } else {
     const title  = document.getElementById('rec-book-title').value.trim();
     const author = document.getElementById('rec-book-author').value.trim();
     if (!title)  { showRecStatus('please enter the book title', true); return; }
     if (!author) { showRecStatus('please enter the author name', true); return; }
-    recData.title  = title;
-    recData.author = author;
+    payload.title  = title;
+    payload.author = author;
   }
 
   showRecStatus('⏳ submitting…', false);
 
   try {
-    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
-    const getRes  = await fetch(`${apiBase}?ref=main`);
-    let recs = [];
-    let sha  = null;
+    const res = await fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-    if (getRes.ok) {
-      const fileData = await getRes.json();
-      sha  = fileData.sha;
-      recs = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, '')))));
-    }
-
-    // Duplicate check for essays
-    if (currentRecType === 'essay' && recs.find(r => r.url === recData.url)) {
-      showRecStatus('this URL has already been recommended — thanks!', false);
-      document.getElementById('rec-url').value = '';
-      return;
-    }
-
-    recs.push(recData);
-
-    const token = getToken();
-    if (!token) {
-      let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
-      localRecs.push(recData);
-      localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
-      showRecStatus('✅ thanks! recommendation noted.', false);
-      clearRecForm();
-      return;
-    }
-
-    const headers = {
-      'Authorization': `token ${token}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    };
-    const body = {
-      message: `rec: add ${currentRecType} recommendation`,
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(recs, null, 2)))),
-      branch: 'main'
-    };
-    if (sha) body.sha = sha;
-
-    const putRes = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
-    if (!putRes.ok) throw new Error('commit failed');
+    if (!res.ok) throw new Error('Formspree submission failed');
 
     showRecStatus('✅ thanks! recommendation received.', false);
     clearRecForm();
   } catch (err) {
-    let localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
-    localRecs.push(recData);
-    localStorage.setItem('oh_pending_recs', JSON.stringify(localRecs));
-    showRecStatus('✅ thanks! recommendation noted.', false);
-    clearRecForm();
+    showRecStatus('⚠️ something went wrong — please try again.', true);
+    console.error(err);
   }
 }
 
