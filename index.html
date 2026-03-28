@@ -9,22 +9,22 @@
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 :root {
-  /* Warm sand & terracotta — earthy, editorial, 2026 */
-  --bg:         #1c1612;
-  --bg2:        #242018;
-  --bg3:        #2e2820;
-  --bg4:        #3a3229;
-  --teal:       #c8714a;
-  --teal2:      #b85c38;
-  --teal-dim:   rgba(200,113,74,0.15);
-  --teal-glow:  rgba(200,113,74,0.22);
-  --white:      #f5f0e8;
-  --white2:     #e0d5c4;
-  --white3:     #a89880;
-  --white4:     #7a6a55;
-  --border:     rgba(200,170,130,0.10);
-  --border2:    rgba(200,170,130,0.18);
-  --border3:    rgba(200,113,74,0.32);
+  /* Blush & slate — soft rose-white with deep plum-slate, 2026 */
+  --bg:         #f7f0f2;
+  --bg2:        #ecdde5;
+  --bg3:        #e0ccd6;
+  --bg4:        #d4bac6;
+  --teal:       #8c4a6e;
+  --teal2:      #7a3a5e;
+  --teal-dim:   rgba(140,74,110,0.10);
+  --teal-glow:  rgba(140,74,110,0.18);
+  --white:      #2a1f26;
+  --white2:     #3e2e3a;
+  --white3:     #7a5a6e;
+  --white4:     #a88898;
+  --border:     rgba(140,74,110,0.12);
+  --border2:    rgba(140,74,110,0.20);
+  --border3:    rgba(140,74,110,0.35);
   --radius:     14px;
   --radius-sm:  8px;
   --font-serif: 'Cormorant Garamond',Georgia,serif;
@@ -35,8 +35,8 @@ body { background:var(--bg); color:var(--white); font-family:var(--font-sans); f
 body::before {
   content:''; position:fixed; inset:0;
   background:
-    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(200,113,74,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 0% 100%, rgba(180,140,90,0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(140,74,110,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 0% 100%, rgba(140,74,110,0.04) 0%, transparent 60%);
   pointer-events:none; z-index:0;
 }
 .page { position:relative; z-index:1; max-width:620px; margin:0 auto; padding:3rem 1.5rem 5rem; }
@@ -129,7 +129,7 @@ body::before {
 .btn-logout:hover { color:var(--white); border-color:var(--border2); }
 
 /* ── LOGIN OVERLAY ── */
-.login-overlay { display:none; position:fixed; inset:0; background:rgba(15,18,30,0.92); z-index:100; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
+.login-overlay { display:none; position:fixed; inset:0; background:rgba(247,240,242,0.88); z-index:100; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
 .login-overlay.show { display:flex; }
 .login-box { background:var(--bg2); border:1px solid var(--border3); border-radius:var(--radius); padding:2.5rem; width:100%; max-width:360px; box-shadow:0 24px 64px rgba(0,0,0,0.5),0 0 48px var(--teal-glow); animation:fadeUp 0.3s ease; }
 .login-title { font-family:var(--font-serif); font-size:22px; font-style:italic; color:var(--white); margin-bottom:6px; }
