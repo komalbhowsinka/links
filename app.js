@@ -109,6 +109,7 @@ function applyOwnerMode() {
     document.getElementById('ownerBranch').textContent = getBranch();
   }
   document.getElementById('essay-add-wrap').style.display = isOwner ? 'block' : 'none';
+  renderEssays(); // re-render so delete buttons appear/disappear
 }
 
 /* ── SECRET LOCK TRIGGER ── */
