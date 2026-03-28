@@ -372,5 +372,29 @@ function showStatus(msg, isError) {
   setTimeout(() => { el.style.opacity = '0'; }, 5000);
 }
 
+/* ── POPULATE YEAR DROPDOWN DYNAMICALLY ── */
+function populateYearDropdown() {
+  const currentYear = new Date().getFullYear();
+  const earliestYear = essays.length > 0
+    ? Math.min(...essays.map(e => parseInt((e.dateLabel || '').split(' ')[1]) || currentYear))
+    : currentYear;
+  const startYear = Math.min(earliestYear, currentYear - 1);
+  const endYear   = currentYear + 2;
+  const select    = document.getElementById('e-year');
+  select.innerHTML = '<option value="">Year</option>';
+  for (let y = endYear; y >= startYear; y--) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    select.appendChild(opt);
+  }
+}
+
 /* ── INIT ── */
-renderEssays();
+populateYearDropdown();
+if (getToken()) {
+  isOwner = true;
+  applyOwnerMode();
+} else {
+  renderEssays();
+}
