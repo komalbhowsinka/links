@@ -12,8 +12,9 @@ const GITHUB_OWNER = "komalbhowsinka";
 const GITHUB_REPO  = "links";
 const GITHUB_FILE  = "index.html";
 
-function getToken()  { return sessionStorage.getItem('gh_token') || ''; }
-function getBranch() { return sessionStorage.getItem('gh_branch') || 'main'; }
+function getToken()       { return sessionStorage.getItem('gh_token')       || ''; }
+function getBranch()      { return sessionStorage.getItem('gh_branch')      || 'main'; }
+function getFormspreeKey(){ return sessionStorage.getItem('fs_key')         || ''; }
 
 // essays declared in index.html as single source of truth.
 // localStorage overrides if present.
@@ -66,39 +67,67 @@ function openLogin() {
 }
 function closeLogin() {
   document.getElementById('loginOverlay').classList.remove('show');
-  document.getElementById('pwInput').value = '';
-  document.getElementById('tokenInput').value = '';
+  document.getElementById('pwInput').value       = '';
+  document.getElementById('tokenInput').value    = '';
+  document.getElementById('formspreeInput').value = '';
   document.getElementById('loginErr').style.display = 'none';
 }
 function tryLogin() {
   const pw     = document.getElementById('pwInput').value;
   const token  = document.getElementById('tokenInput').value.trim();
+  const fsKey  = document.getElementById('formspreeInput').value.trim();
   const branch = document.getElementById('branchInput').value.trim() || 'main';
 
   if (pw !== OWNER_PASSWORD) {
-    document.getElementById('loginErr').textContent = 'incorrect password';
-    document.getElementById('loginErr').style.display = 'block';
+    showLoginErr('incorrect password');
     document.getElementById('pwInput').value = '';
     document.getElementById('pwInput').focus();
     return;
   }
   if (!token) {
-    document.getElementById('loginErr').textContent = 'github token is required';
-    document.getElementById('loginErr').style.display = 'block';
+    showLoginErr('github token is required');
     document.getElementById('tokenInput').focus();
     return;
   }
 
-  sessionStorage.setItem('gh_token', token);
-  sessionStorage.setItem('gh_branch', branch);
-  isOwner = true;
-  closeLogin();
-  applyOwnerMode();
+  // Validate token against GitHub before accepting
+  showLoginErr('⏳ validating token…', false);
+  fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`, {
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+  }).then(res => {
+    if (res.status === 401) {
+      showLoginErr('your GitHub token has expired — generate a new one at github.com/settings/tokens');
+      document.getElementById('tokenInput').value = '';
+      document.getElementById('tokenInput').focus();
+      return;
+    }
+    if (!res.ok) {
+      showLoginErr(`github error ${res.status} — check your token and try again`);
+      return;
+    }
+    // Token valid — proceed
+    sessionStorage.setItem('gh_token',  token);
+    sessionStorage.setItem('gh_branch', branch);
+    if (fsKey) sessionStorage.setItem('fs_key', fsKey);
+    isOwner = true;
+    closeLogin();
+    applyOwnerMode();
+  }).catch(() => {
+    showLoginErr('could not reach github — check your connection and try again');
+  });
+}
+
+function showLoginErr(msg, isError = true) {
+  const el = document.getElementById('loginErr');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.color = isError ? '#f47272' : 'var(--teal)';
 }
 function logout() {
   isOwner = false;
   sessionStorage.removeItem('gh_token');
   sessionStorage.removeItem('gh_branch');
+  sessionStorage.removeItem('fs_key');
   applyOwnerMode();
 }
 function applyOwnerMode() {
@@ -106,6 +135,9 @@ function applyOwnerMode() {
   if (isOwner) document.getElementById('ownerBranch').textContent = getBranch();
   document.getElementById('essay-add-wrap').style.display = isOwner ? 'block' : 'none';
   renderEssays();
+  if (isOwner && document.getElementById('tab-recommend').classList.contains('visible')) {
+    loadFormspreeInbox();
+  }
 }
 
 /* ── SECRET LOCK TRIGGER ── */
@@ -123,6 +155,7 @@ function showTab(tab, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('visible');
   btn.classList.add('active');
+  if (tab === 'recommend' && isOwner) loadFormspreeInbox();
 }
 
 /* ── ESSAYS ── */
@@ -246,7 +279,10 @@ function deleteEssay(id) {
         setTimeout(() => location.reload(), 2500);
       } catch (err) {
         console.error(err);
-        showStatus('⚠️ Deleted locally but GitHub commit failed: ' + err.message, true);
+        const msg = err.message === 'TOKEN_EXPIRED'
+          ? '⚠️ Your GitHub token may have expired — log out and log in with a new token.'
+          : '⚠️ Deleted locally but GitHub commit failed: ' + err.message;
+        showStatus(msg, true);
       }
     }
   );
@@ -333,7 +369,10 @@ async function saveEssay() {
     setTimeout(() => location.reload(), 2500);
   } catch (err) {
     console.error(err);
-    showStatus('⚠️ Saved locally but GitHub commit failed: ' + err.message, true);
+    const msg = err.message === 'TOKEN_EXPIRED'
+      ? '⚠️ Your GitHub token may have expired — log out and log in with a new token.'
+      : '⚠️ Saved locally but GitHub commit failed: ' + err.message;
+    showStatus(msg, true);
   }
 }
 
@@ -351,6 +390,7 @@ async function commitToGitHub(commitMessage) {
   };
 
   const getRes = await fetch(`${apiBase}?ref=${branch}`, { headers });
+  if (getRes.status === 401) throw new Error('TOKEN_EXPIRED');
   if (!getRes.ok) throw new Error(`GitHub GET failed: ${getRes.status}`);
   const fileData = await getRes.json();
   const sha = fileData.sha;
@@ -412,8 +452,150 @@ function showStatus(msg, isError) {
 /* ══════════════════════════════════════
    RECOMMENDATIONS — via Formspree
 ══════════════════════════════════════ */
-const FORMSPREE_URL = 'https://formspree.io/f/mykbeybk';
-let currentRecType  = 'essay';
+const FORMSPREE_URL    = 'https://formspree.io/f/mykbeybk';
+const FORMSPREE_FORM_ID = 'mykbeybk';
+let currentRecType = 'essay';
+
+/* ── FORMSPREE INBOX (owner only) ── */
+async function loadFormspreeInbox() {
+  const fsKey  = getFormspreeKey();
+  const inbox  = document.getElementById('rec-inbox');
+  const list   = document.getElementById('rec-inbox-list');
+  const empty  = document.getElementById('rec-inbox-empty');
+
+  inbox.style.display = 'block';
+
+  if (!fsKey) {
+    list.innerHTML = '<div class="empty">no formspree api key — log out and log in again with your key to see submissions</div>';
+    return;
+  }
+
+  list.innerHTML = '<div class="empty">loading submissions…</div>';
+
+  try {
+    const res = await fetch(`https://formspree.io/api/0/forms/${FORMSPREE_FORM_ID}/submissions`, {
+      headers: {
+        'Authorization': `Bearer ${fsKey}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!res.ok) throw new Error(`Formspree API error: ${res.status}`);
+    const data = await res.json();
+    const submissions = data.submissions || [];
+
+    if (!submissions.length) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    window.__fsSubmissions = submissions;
+
+    list.innerHTML = submissions.map((s, i) => {
+      const isBook  = s.body?.type === 'book';
+      const date    = new Date(s.submittedAt || s._date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const label   = isBook
+        ? `📚 ${s.body?.title || '—'} · ${s.body?.author || '—'}`
+        : `📄 ${s.body?.url || s.body?._replyto || '—'}`;
+      const openBtn = !isBook && (s.body?.url || s.body?._replyto)
+        ? `<a href="${s.body?.url || s.body?._replyto}" target="_blank" class="rec-btn rec-btn-open">open ↗</a>`
+        : '';
+      const addBtn  = !isBook
+        ? `<button class="rec-btn rec-btn-add" onclick="promoteFromInbox(${i})">+ add to essays</button>`
+        : '';
+      return `
+        <div class="rec-card" id="fs-rec-${i}">
+          <div class="rec-url">${label}</div>
+          <div class="rec-meta">${date}</div>
+          <div class="rec-actions">
+            ${openBtn}
+            ${addBtn}
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    list.innerHTML = `<div class="empty">could not load submissions: ${err.message}</div>`;
+  }
+}
+
+/* ── PROMOTE FROM INBOX — opens inline form ── */
+function promoteFromInbox(idx) {
+  const s = window.__fsSubmissions[idx];
+  if (!s) return;
+  const url = s.body?.url || s.body?._replyto || '';
+
+  const existing = document.getElementById('rec-inline-form');
+  if (existing) existing.remove();
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({length: 6}, (_, i) => currentYear + 2 - i)
+    .map(y => `<option value="${y}"${y === currentYear ? ' selected' : ''}>${y}</option>`).join('');
+  const monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
+
+  const card = document.getElementById(`fs-rec-${idx}`);
+  const form = document.createElement('div');
+  form.id = 'rec-inline-form';
+  form.className = 'rec-inline-form';
+  form.innerHTML = `
+    <div class="rec-inline-label">Add to essays · will be tagged as ✦ recommended</div>
+    <div class="form-row"><label class="form-label">Title</label><input class="form-input" id="ri-title" placeholder="essay title"/></div>
+    <div class="form-row"><label class="form-label">URL</label><input class="form-input" id="ri-url" value="${url}" readonly style="opacity:0.6"/></div>
+    <div class="form-row"><label class="form-label">Source</label><input class="form-input" id="ri-source" placeholder="e.g. Aeon, Psyche"/></div>
+    <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="ri-desc" placeholder="why should someone read this?"/></div>
+    <div class="form-row"><label class="form-label">Category</label><input class="form-input" id="ri-cat" placeholder="e.g. Philosophy, Ethics"/></div>
+    <div class="form-row">
+      <label class="form-label">Date <span class="form-optional">(optional)</span></label>
+      <div class="form-date-row">
+        <select class="form-input" id="ri-month"><option value="">Month</option>${monthOptions}</select>
+        <select class="form-input" id="ri-year"><option value="">Year</option>${yearOptions}</select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" onclick="saveFromInbox()">save as recommended</button>
+      <button class="btn-cancel" onclick="document.getElementById('rec-inline-form').remove()">cancel</button>
+    </div>
+  `;
+  card.appendChild(form);
+  document.getElementById('ri-title').focus();
+}
+
+/* ── SAVE FROM INBOX ── */
+async function saveFromInbox() {
+  const title    = document.getElementById('ri-title').value.trim();
+  const url      = document.getElementById('ri-url').value.trim();
+  const source   = document.getElementById('ri-source').value.trim();
+  const desc     = document.getElementById('ri-desc').value.trim();
+  const category = document.getElementById('ri-cat').value.trim();
+  const selMonth = document.getElementById('ri-month').value;
+  const selYear  = document.getElementById('ri-year').value;
+
+  if (!title || !category) { alert('Please fill in title and category.'); return; }
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateLabel = (selMonth && selYear)
+    ? selMonth + ' ' + selYear
+    : months[new Date().getMonth()] + ' ' + new Date().getFullYear();
+
+  essays.unshift({ id: nextId++, title, url, source: source || '—', category, dateLabel, desc, recommended: true });
+  save();
+  renderEssays();
+
+  document.getElementById('rec-inline-form').remove();
+
+  showStatus('⏳ Saving to GitHub…', false);
+  try {
+    await commitToGitHub(`feat: add recommended essay "${title}"`);
+    showStatus('✅ Saved & committed to GitHub! Reloading…', false);
+    setTimeout(() => location.reload(), 2500);
+  } catch (err) {
+    console.error(err);
+    showStatus('⚠️ Saved locally but GitHub commit failed: ' + err.message, true);
+  }
+}
 
 function selectRecType(type) {
   currentRecType = type;
