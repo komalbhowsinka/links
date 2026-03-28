@@ -55,6 +55,7 @@
   <!-- ══ NAV ══ -->
   <div class="nav">
     <button class="nav-btn active" onclick="showTab('essays',this)">Food for Thought</button>
+    <button class="nav-btn" onclick="showTab('recommend',this)">Recommend</button>
     <button class="nav-btn" onclick="showTab('about',this)">About</button>
   </div>
 
@@ -96,6 +97,38 @@
           <button class="btn-cancel" onclick="toggleForm('essay-form')">cancel</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ RECOMMEND ══ -->
+  <div class="section" id="tab-recommend">
+    <div class="sec-header">
+      <div class="sec-title">Recommend</div>
+      <div class="sec-sub">share something worth reading</div>
+    </div>
+
+    <!-- Public submission form -->
+    <div class="about-card" id="rec-form-wrap">
+      <div class="about-bio" style="font-size:14px;margin-bottom:1.25rem">
+        Found something worth reading? Drop the link below. No sign-up, no name needed.
+      </div>
+      <div class="form-row">
+        <label class="form-label">URL</label>
+        <input class="form-input" id="rec-url" placeholder="https://..." />
+      </div>
+      <div class="form-actions">
+        <button class="btn-save" onclick="submitRecommendation()">send it</button>
+      </div>
+      <div id="rec-status" style="display:none;margin-top:12px;font-size:11px;letter-spacing:0.04em;"></div>
+    </div>
+
+    <!-- Owner: pending recommendations inbox -->
+    <div id="rec-inbox" style="display:none">
+      <div style="font-size:11px;color:var(--white4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1rem">
+        Pending recommendations
+      </div>
+      <div id="rec-inbox-list"></div>
+      <div id="rec-inbox-empty" style="display:none" class="empty">no pending recommendations</div>
     </div>
   </div>
 
@@ -165,7 +198,7 @@
     "source": "Aeon",
     "category": "Psychology",
     "dateLabel": "Mar 2026",
-    "desc": "In a world of difference we can – and should – work harder to cultivate subtle, perceptive empathy towards all human beings."
+    "desc": "In a world of difference we can \u2013 and should \u2013 work harder to cultivate subtle, perceptive empathy towards all human beings."
   },
   {
     "id": 2,
@@ -399,7 +432,7 @@
     "source": "Psyche",
     "category": "Neuroscience",
     "dateLabel": "Mar 2026",
-    "desc": "Research is uncovering the way music can calm the brain and there are techniques to help you amplify its emotional power"
+    "desc": "Research is uncovering the way music can calm the brain and there are techniques to help you amplify its emotional power."
   },
   {
     "id": 28,
