@@ -110,12 +110,38 @@
     <!-- Public submission form -->
     <div class="about-card" id="rec-form-wrap">
       <div class="about-bio" style="font-size:14px;margin-bottom:1.25rem">
-        Found something worth reading? Drop the link below. No sign-up, no name needed.
+        Found something worth reading? Share it below. No sign-up, no name needed.
       </div>
+
+      <!-- Type selector -->
       <div class="form-row">
-        <label class="form-label">URL</label>
-        <input class="form-input" id="rec-url" placeholder="https://..." />
+        <label class="form-label">What are you recommending?</label>
+        <div style="display:flex;gap:8px">
+          <button class="rec-type-btn active" id="rec-type-essay" onclick="selectRecType('essay')">📄 Essay / Article</button>
+          <button class="rec-type-btn" id="rec-type-book" onclick="selectRecType('book')">📚 Book</button>
+        </div>
       </div>
+
+      <!-- Essay fields -->
+      <div id="rec-essay-fields">
+        <div class="form-row">
+          <label class="form-label">URL</label>
+          <input class="form-input" id="rec-url" placeholder="https://..."/>
+        </div>
+      </div>
+
+      <!-- Book fields -->
+      <div id="rec-book-fields" style="display:none">
+        <div class="form-row">
+          <label class="form-label">Book title</label>
+          <input class="form-input" id="rec-book-title" placeholder="e.g. The Precipice"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Author</label>
+          <input class="form-input" id="rec-book-author" placeholder="e.g. Toby Ord"/>
+        </div>
+      </div>
+
       <div class="form-actions">
         <button class="btn-save" onclick="submitRecommendation()">send it</button>
       </div>
