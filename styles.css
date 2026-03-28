@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>outlandish humor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!-- ══ LOGIN OVERLAY ══ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-title">Owner access</div>
+    <div class="login-sub">enter your password to edit this page</div>
+    <div class="form-row" style="margin-bottom:0">
+      <input class="form-input" id="pwInput" type="password" placeholder="password" onkeydown="if(event.key==='Enter') tryLogin()"/>
+    </div>
+    <div class="login-err" id="loginErr">incorrect password</div>
+    <div class="login-actions">
+      <button class="btn-save" onclick="tryLogin()">unlock</button>
+      <button class="btn-cancel" onclick="closeLogin()">cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ══ OWNER BAR ══ -->
+  <div class="owner-bar" id="ownerBar">
+    <span>✦ editing as owner</span>
+    <button class="btn-logout" onclick="logout()">lock page</button>
+  </div>
+
+  <!-- ══ PROFILE ══ -->
+  <div class="profile">
+    <div class="avatar">😂</div>
+    <div class="profile-info">
+      <div class="profile-name">outlandish humor</div>
+      <div class="profile-handle"><span>@</span>outlandish_humor</div>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab('essays',this)">Food for Thought</button>
+    <button class="nav-btn" onclick="showTab('about',this)">About</button>
+  </div>
+
+  <!-- ══ FOOD FOR THOUGHT ══ -->
+  <div class="section visible" id="tab-essays">
+    <div class="sec-header">
+      <div class="sec-title">Food for Thought</div>
+      <div class="sec-sub">essays worth your time</div>
+    </div>
+    <div class="filters" id="catFilters"></div>
+    <div class="divider"></div>
+    <div class="count" id="essay-count"></div>
+    <div id="essay-cards"></div>
+    <div id="essay-add-wrap" style="display:none">
+      <button class="add-toggle" onclick="toggleForm('essay-form')">+ add essay</button>
+      <div class="add-form" id="essay-form">
+        <div class="form-row"><label class="form-label">Essay title</label><input class="form-input" id="e-title" placeholder="paste the essay title"/></div>
+        <div class="form-row"><label class="form-label">URL</label><input class="form-input" id="e-url" placeholder="https://aeon.co/..."/></div>
+        <div class="form-row"><label class="form-label">Source</label><input class="form-input" id="e-source" placeholder="e.g. Aeon, Psyche, NYT"/></div>
+        <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="e-desc" placeholder="why should someone read this?"/></div>
+        <div class="form-row"><label class="form-label">Category</label><input class="form-input" id="e-cat" placeholder="e.g. Philosophy, Sleep and Dreams, Ethics"/></div>
+        <div class="form-actions">
+          <button class="btn-save" onclick="saveEssay()">save essay</button>
+          <button class="btn-cancel" onclick="toggleForm('essay-form')">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ABOUT ══ -->
+  <div class="section" id="tab-about">
+    <div class="sec-header">
+      <div class="sec-title">Komal Bhowsinka</div>
+      <div class="sec-sub">the human behind this site</div>
+    </div>
+    <div class="about-card">
+      <div class="about-bio">
+        A woman who reads philosophy for fun and genuinely thinks that's a normal thing to do.
+        Fluent in English, Hindi, and Bengali. Passable in Nepali and Korean. Aggressively working on Mandarin. Sarcasm is a given across all of them.
+        Spends an unreasonable amount of time studying financial markets, building AI tools on a laptop that has no business running AI tools, and watching BTS music videos for "research purposes."
+        Travels frequently — partly by choice, mostly because the universe has a sense of humour.
+        Socialises with intent, which is a polite way of saying she will absolutely bring up Zeno's paradox at dinner.
+        Currently teaching herself how the global economy works, one Robert Shiller lecture at a time.
+        Has strong opinions about sleep, regret, and the ship of Theseus.
+        Will recommend you an essay before she recommends you a therapist. Possibly instead of.
+      </div>
+      <div class="about-links">
+        <a class="about-link" href="https://instagram.com/outlandish_humor" target="_blank">
+          <div class="about-link-icon">📸</div>
+          <div><div class="about-link-label">Instagram</div><div class="about-link-sub">@outlandish_humor</div></div>
+          <div class="about-link-arrow">↗</div>
+        </a>
+        <a class="about-link" href="https://www.linkedin.com/in/komalbhowsinka/" target="_blank">
+          <div class="about-link-icon">💼</div>
+          <div><div class="about-link-label">LinkedIn</div><div class="about-link-sub">Komal Bhowsinka</div></div>
+          <div class="about-link-arrow">↗</div>
+        </a>
+        <a class="about-link" href="mailto:komalbhowsinka99@gmail.com">
+          <div class="about-link-icon">✉️</div>
+          <div><div class="about-link-label">Email</div><div class="about-link-sub">komalbhowsinka99@gmail.com</div></div>
+          <div class="about-link-arrow">↗</div>
+        </a>
+        <a class="about-link" href="https://komalbhowsinka99.wixsite.com/theskyofmusing" target="_blank">
+          <div class="about-link-icon">🌤️</div>
+          <div><div class="about-link-label">The Sky of Musing</div><div class="about-link-sub">a little creativity from 2021</div></div>
+          <div class="about-link-arrow">↗</div>
+        </a>
+        <a class="about-link" href="https://www.instagram.com/komalbhowsinka/" target="_blank">
+          <div class="about-link-icon">🎨</div>
+          <div><div class="about-link-label">Art Instagram</div><div class="about-link-sub">@komalbhowsinka</div></div>
+          <div class="about-link-arrow">↗</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    compiled with curiosity · no ads · no algorithms
+    <span class="lock-trigger" id="lockTrigger">🔒</span>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
