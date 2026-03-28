@@ -76,6 +76,23 @@
         <div class="form-row"><label class="form-label">Source</label><input class="form-input" id="e-source" placeholder="e.g. Aeon, Psyche, NYT"/></div>
         <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="e-desc" placeholder="why should someone read this?"/></div>
         <div class="form-row"><label class="form-label">Category</label><input class="form-input" id="e-cat" placeholder="e.g. Philosophy, Sleep and Dreams, Ethics"/></div>
+        <div class="form-row">
+          <label class="form-label">Date <span class="form-optional">(optional — defaults to today)</span></label>
+          <div style="display:flex;gap:8px">
+            <select class="form-input" id="e-month" style="flex:1">
+              <option value="">Month</option>
+              <option>Jan</option><option>Feb</option><option>Mar</option>
+              <option>Apr</option><option>May</option><option>Jun</option>
+              <option>Jul</option><option>Aug</option><option>Sep</option>
+              <option>Oct</option><option>Nov</option><option>Dec</option>
+            </select>
+            <select class="form-input" id="e-year" style="flex:1">
+              <option value="">Year</option>
+              <option>2022</option><option>2023</option><option>2024</option>
+              <option>2025</option><option>2026</option><option>2027</option>
+            </select>
+          </div>
+        </div>
         <div class="form-actions">
           <button class="btn-save" onclick="saveEssay()">save essay</button>
           <button class="btn-cancel" onclick="toggleForm('essay-form')">cancel</button>
@@ -144,31 +161,13 @@
   /* ESSAYS_START */
   let essays = [
   {
-    "id": 1774734182968,
-    "title": "test 2",
-    "url": "test.com",
-    "source": "komal",
-    "category": "psy",
-    "dateLabel": "Mar 2026",
-    "desc": "just another test"
-  },
-  {
-    "id": 1774732654283,
-    "title": "Test Essay",
-    "url": "https://komalbhowsinka.github.io/links/",
-    "source": "Fake_link",
-    "category": "psyc",
-    "dateLabel": "Mar 2026",
-    "desc": "Another weird test"
-  },
-  {
     "id": 1,
     "title": "The Case of Empathy",
     "url": "https://aeon.co/essays/a-sophisticates-primer-on-empathy-and-its-limits",
     "source": "Aeon",
     "category": "Psychology",
     "dateLabel": "Mar 2026",
-    "desc": "In a world of difference we can – and should – work harder to cultivate subtle, perceptive empathy towards all human beings."
+    "desc": "In a world of difference we can \u2013 and should \u2013 work harder to cultivate subtle, perceptive empathy towards all human beings."
   },
   {
     "id": 2,
@@ -402,7 +401,7 @@
     "source": "Psyche",
     "category": "Neuroscience",
     "dateLabel": "Mar 2026",
-    "desc": "Research is uncovering the way music can calm the brain and there are techniques to help you amplify its emotional power"
+    "desc": "Research is uncovering the way music can calm the brain and there are techniques to help you amplify its emotional power."
   },
   {
     "id": 28,
