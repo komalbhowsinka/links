@@ -1,20 +1,22 @@
 /* ══════════════════════════════════════
-   SET YOUR PASSWORD HERE
+   PASSWORD — only non-secret config
 ══════════════════════════════════════ */
 const OWNER_PASSWORD = "outlandish_humor";
 
 /* ══════════════════════════════════════
-   GITHUB CONFIG — replace token below
+   GITHUB CONFIG — no secrets hardcoded
+   token + branch entered at login time
+   and stored in sessionStorage only
 ══════════════════════════════════════ */
-const GITHUB_TOKEN  = "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";
-const GITHUB_OWNER  = "komalbhowsinka";
-const GITHUB_REPO   = "links";
-const GITHUB_BRANCH = "qa";
-const GITHUB_FILE   = "index.html";
-/* ══════════════════════════════════════ */
+const GITHUB_OWNER = "komalbhowsinka";
+const GITHUB_REPO  = "links";
+const GITHUB_FILE  = "index.html";
 
-// essays is declared in index.html as the source of truth.
-// localStorage overrides it if present (local unsaved changes).
+function getToken()  { return sessionStorage.getItem('gh_token') || ''; }
+function getBranch() { return sessionStorage.getItem('gh_branch') || 'qa'; }
+
+// essays declared in index.html as single source of truth.
+// localStorage overrides if present.
 essays = JSON.parse(localStorage.getItem('oh_essays') || 'null') || essays;
 
 const TAG_PALETTE = [
@@ -59,30 +61,53 @@ function save() {
 /* ── AUTH ── */
 function openLogin() {
   document.getElementById('loginOverlay').classList.add('show');
+  // pre-fill branch if already stored
+  document.getElementById('branchInput').value = getBranch();
   document.getElementById('pwInput').focus();
 }
 function closeLogin() {
   document.getElementById('loginOverlay').classList.remove('show');
   document.getElementById('pwInput').value = '';
+  document.getElementById('tokenInput').value = '';
   document.getElementById('loginErr').style.display = 'none';
 }
 function tryLogin() {
-  if (document.getElementById('pwInput').value === OWNER_PASSWORD) {
-    isOwner = true;
-    closeLogin();
-    applyOwnerMode();
-  } else {
+  const pw     = document.getElementById('pwInput').value;
+  const token  = document.getElementById('tokenInput').value.trim();
+  const branch = document.getElementById('branchInput').value.trim() || 'qa';
+
+  if (pw !== OWNER_PASSWORD) {
+    document.getElementById('loginErr').textContent = 'incorrect password';
     document.getElementById('loginErr').style.display = 'block';
     document.getElementById('pwInput').value = '';
     document.getElementById('pwInput').focus();
+    return;
   }
+  if (!token) {
+    document.getElementById('loginErr').textContent = 'github token is required';
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('tokenInput').focus();
+    return;
+  }
+
+  // store in sessionStorage — cleared when tab closes
+  sessionStorage.setItem('gh_token', token);
+  sessionStorage.setItem('gh_branch', branch);
+  isOwner = true;
+  closeLogin();
+  applyOwnerMode();
 }
 function logout() {
   isOwner = false;
+  sessionStorage.removeItem('gh_token');
+  sessionStorage.removeItem('gh_branch');
   applyOwnerMode();
 }
 function applyOwnerMode() {
   document.getElementById('ownerBar').classList.toggle('show', isOwner);
+  if (isOwner) {
+    document.getElementById('ownerBranch').textContent = getBranch();
+  }
   document.getElementById('essay-add-wrap').style.display = isOwner ? 'block' : 'none';
 }
 
@@ -92,10 +117,7 @@ document.getElementById('lockTrigger').addEventListener('click', () => {
   lockClicks++;
   clearTimeout(lockTimer);
   lockTimer = setTimeout(() => lockClicks = 0, 600);
-  if (lockClicks >= 3) {
-    lockClicks = 0;
-    openLogin();
-  }
+  if (lockClicks >= 3) { lockClicks = 0; openLogin(); }
 });
 
 /* ── TABS ── */
@@ -233,14 +255,18 @@ async function saveEssay() {
 
 /* ── GITHUB COMMIT ── */
 async function commitToGitHub(essayTitle) {
+  const token  = getToken();
+  const branch = getBranch();
+  if (!token) throw new Error('No GitHub token in session — please log out and log in again.');
+
   const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
   const headers = {
-    'Authorization': `token ${GITHUB_TOKEN}`,
+    'Authorization': `token ${token}`,
     'Accept': 'application/vnd.github+json',
     'Content-Type': 'application/json'
   };
 
-  const getRes = await fetch(`${apiBase}?ref=${GITHUB_BRANCH}`, { headers });
+  const getRes = await fetch(`${apiBase}?ref=${branch}`, { headers });
   if (!getRes.ok) throw new Error(`GitHub GET failed: ${getRes.status}`);
   const fileData = await getRes.json();
   const sha = fileData.sha;
@@ -255,7 +281,7 @@ async function commitToGitHub(essayTitle) {
       message: `feat: add essay "${essayTitle}"`,
       content: btoa(unescape(encodeURIComponent(updatedContent))),
       sha,
-      branch: GITHUB_BRANCH
+      branch
     })
   });
   if (!putRes.ok) {
@@ -264,7 +290,7 @@ async function commitToGitHub(essayTitle) {
   }
 }
 
-/* ── REBUILD index.html — swaps out the essays array between markers ── */
+/* ── REBUILD index.html ── */
 function rebuildIndexHtml(html) {
   const START_MARKER = '/* ESSAYS_START */';
   const END_MARKER   = '/* ESSAYS_END */';
