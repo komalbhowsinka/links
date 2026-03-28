@@ -192,7 +192,7 @@ function renderEssays() {
 
       byYear[year][month].forEach(e => {
         const deleteBtn = ownerMode
-          ? `<button class="essay-delete" onclick="event.preventDefault();deleteEssay(${e.id})" title="delete essay">✕</button>`
+          ? `<button class="essay-delete" onclick="event.preventDefault();event.stopPropagation();deleteEssay(${e.id})" title="delete essay">✕</button>`
           : '';
         html += `<a class="essay-card" href="${e.url}" target="_blank">
           <div class="essay-top">
