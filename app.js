@@ -96,6 +96,8 @@ function tryLogin() {
   isOwner = true;
   closeLogin();
   applyOwnerMode();
+  // Sync any localStorage recs to GitHub in the background
+  syncLocalRecs();
 }
 function logout() {
   isOwner = false;
@@ -109,7 +111,46 @@ function applyOwnerMode() {
     document.getElementById('ownerBranch').textContent = getBranch();
   }
   document.getElementById('essay-add-wrap').style.display = isOwner ? 'block' : 'none';
-  renderEssays(); // re-render so delete buttons appear/disappear
+  renderEssays();
+  // If owner is on the recommend tab, load the inbox
+  if (isOwner && document.getElementById('tab-recommend').classList.contains('visible')) {
+    loadRecInbox();
+  }
+}
+
+/* ── SYNC LOCAL RECS TO GITHUB ON LOGIN ── */
+async function syncLocalRecs() {
+  const localRecs = JSON.parse(localStorage.getItem('oh_pending_recs') || '[]');
+  if (!localRecs.length) return;
+  try {
+    const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_REC_FILE}`;
+    const headers = { 'Authorization': `token ${getToken()}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+    const getRes  = await fetch(`${apiBase}?ref=main`, { headers });
+    let recs = [];
+    let sha  = null;
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha  = fileData.sha;
+      recs = JSON.parse(decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, '')))));
+    }
+    // Merge — avoid duplicates
+    localRecs.forEach(lr => {
+      const isDup = lr.url
+        ? recs.find(r => r.url === lr.url)
+        : recs.find(r => r.title === lr.title && r.author === lr.author);
+      if (!isDup) recs.push(lr);
+    });
+    const body = {
+      message: 'rec: sync local recommendations',
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(recs, null, 2)))),
+      branch: 'main'
+    };
+    if (sha) body.sha = sha;
+    await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
+    localStorage.removeItem('oh_pending_recs');
+  } catch (err) {
+    console.warn('Could not sync local recs to GitHub', err);
+  }
 }
 
 /* ── SECRET LOCK TRIGGER ── */
