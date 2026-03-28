@@ -126,7 +126,9 @@ body::before {
 .btn-cancel:hover { background:var(--bg3); }
 
 /* ── ESSAY DELETE BUTTON ── */
-.essay-delete { background:transparent; border:1px solid var(--border2); border-radius:6px; color:var(--white4); font-size:10px; padding:3px 7px; cursor:pointer; transition:all 0.18s; line-height:1; flex-shrink:0; }
+.essay-wrap { position:relative; margin-bottom:10px; }
+.essay-wrap .essay-card { margin-bottom:0; }
+.essay-delete { position:absolute; top:10px; right:10px; z-index:10; background:var(--bg3); border:1px solid var(--border2); border-radius:6px; color:var(--white4); font-size:10px; padding:3px 7px; cursor:pointer; transition:all 0.18s; line-height:1; }
 .essay-delete:hover { background:#3e1a1a; border-color:#f4727244; color:#f47272; }
 
 /* ── EMPTY ── */
