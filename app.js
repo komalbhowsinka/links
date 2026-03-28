@@ -230,24 +230,76 @@ function toggleForm(id) {
 }
 
 /* ── DELETE ESSAY ── */
-async function deleteEssay(id) {
+function deleteEssay(id) {
   const essay = essays.find(e => e.id === id);
   if (!essay) return;
-  if (!confirm(`Delete "${essay.title}"?\n\nThis will commit the change to GitHub.`)) return;
+  showConfirm(
+    `Delete this essay?`,
+    `"${essay.title}" will be permanently removed and committed to GitHub.`,
+    async () => {
+      essays = essays.filter(e => e.id !== id);
+      save();
+      renderEssays();
+      showStatus('⏳ Deleting from GitHub…', false);
+      try {
+        await commitToGitHub(`remove essay "${essay.title}"`);
+        showStatus('✅ Deleted & committed to GitHub! Reloading…', false);
+        setTimeout(() => location.reload(), 2500);
+      } catch (err) {
+        console.error(err);
+        showStatus('⚠️ Deleted locally but GitHub commit failed: ' + err.message, true);
+      }
+    }
+  );
+}
 
-  essays = essays.filter(e => e.id !== id);
-  save();
-  renderEssays();
+/* ── CONFIRM MODAL ── */
+function showConfirm(title, subtitle, onConfirm) {
+  // Remove any existing modal
+  const existing = document.getElementById('confirm-modal');
+  if (existing) existing.remove();
 
-  showStatus('⏳ Deleting from GitHub…', false);
-  try {
-    await commitToGitHub(`remove essay "${essay.title}"`);
-    showStatus('✅ Deleted & committed to GitHub! Reloading…', false);
-    setTimeout(() => location.reload(), 2500);
-  } catch (err) {
-    console.error(err);
-    showStatus('⚠️ Deleted locally but GitHub commit failed: ' + err.message, true);
-  }
+  const modal = document.createElement('div');
+  modal.id = 'confirm-modal';
+  modal.style.cssText = `
+    position:fixed; inset:0; z-index:200;
+    background:rgba(247,240,242,0.88); backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center;
+  `;
+  modal.innerHTML = `
+    <div style="
+      background:var(--bg2); border:1px solid var(--border3);
+      border-radius:var(--radius); padding:2rem; width:100%;
+      max-width:340px; box-shadow:0 24px 64px rgba(0,0,0,0.3),0 0 48px var(--teal-glow);
+      animation:fadeUp 0.25s ease;
+    ">
+      <div style="font-family:var(--font-serif);font-size:20px;font-style:italic;color:var(--white);margin-bottom:8px">${title}</div>
+      <div style="font-size:12px;color:var(--white4);line-height:1.6;margin-bottom:1.5rem;letter-spacing:0.02em">${subtitle}</div>
+      <div style="display:flex;gap:8px">
+        <button id="confirm-yes" style="
+          flex:1; padding:10px; background:#7a1a1a; color:#f47272;
+          border:1px solid #f4727244; border-radius:var(--radius-sm);
+          font-family:var(--font-sans); font-size:12px; cursor:pointer;
+          transition:all 0.18s; letter-spacing:0.04em;
+        ">yes, delete</button>
+        <button id="confirm-no" style="
+          padding:10px 16px; background:transparent; color:var(--white4);
+          border:1px solid var(--border2); border-radius:var(--radius-sm);
+          font-family:var(--font-sans); font-size:12px; cursor:pointer;
+          transition:background 0.15s;
+        ">cancel</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  document.getElementById('confirm-yes').onclick = () => {
+    modal.remove();
+    onConfirm();
+  };
+  document.getElementById('confirm-no').onclick = () => modal.remove();
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
 }
 
 /* ── SAVE ESSAY + COMMIT TO GITHUB ── */
