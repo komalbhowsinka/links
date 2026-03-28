@@ -2,6 +2,15 @@
    SET YOUR PASSWORD HERE
 ══════════════════════════════════════ */
 const OWNER_PASSWORD = "outlandish_humor";
+
+/* ══════════════════════════════════════
+   GITHUB CONFIG — replace token below
+══════════════════════════════════════ */
+const GITHUB_TOKEN  = "YOUR_GITHUB_TOKEN_HERE";
+const GITHUB_OWNER  = "komalbhowsinka";
+const GITHUB_REPO   = "links";
+const GITHUB_BRANCH = "qa";
+const GITHUB_FILE   = "index.html";
 /* ══════════════════════════════════════ */
 
 const TAG_PALETTE = [
@@ -214,13 +223,14 @@ function toggleForm(id) {
   document.getElementById(id).classList.toggle('open');
 }
 
-function saveEssay() {
+async function saveEssay() {
   const title    = document.getElementById('e-title').value.trim();
   const url      = document.getElementById('e-url').value.trim();
   const source   = document.getElementById('e-source').value.trim();
   const desc     = document.getElementById('e-desc').value.trim();
   const category = document.getElementById('e-cat').value.trim();
   if (!title || !url || !category) { alert('Please fill in title, URL and category.'); return; }
+
   const now = new Date();
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   essays.unshift({
@@ -232,9 +242,95 @@ function saveEssay() {
     desc
   });
   save();
+
+  // Clear form
   ['e-title','e-url','e-source','e-desc','e-cat'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('essay-form').classList.remove('open');
   renderEssays();
+
+  // Commit to GitHub
+  showStatus('⏳ Saving to GitHub…', false);
+  try {
+    await commitToGitHub(title);
+    showStatus('✅ Saved & committed to GitHub! Reloading…', false);
+    setTimeout(() => location.reload(), 2500);
+  } catch (err) {
+    console.error(err);
+    showStatus('⚠️ Saved locally but GitHub commit failed: ' + err.message, true);
+  }
+}
+
+/* ── GITHUB COMMIT ── */
+async function commitToGitHub(essayTitle) {
+  const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+  const headers = {
+    'Authorization': `token ${GITHUB_TOKEN}`,
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+
+  // 1. Get current file SHA + content
+  const getRes = await fetch(`${apiBase}?ref=${GITHUB_BRANCH}`, { headers });
+  if (!getRes.ok) throw new Error(`GitHub GET failed: ${getRes.status}`);
+  const fileData = await getRes.json();
+  const sha = fileData.sha;
+
+  // 2. Build updated index.html with new essays array baked in
+  const currentContent = atob(fileData.content.replace(/\n/g, ''));
+  const updatedContent = rebuildIndexHtml(currentContent);
+
+  // 3. Commit
+  const putRes = await fetch(apiBase, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({
+      message: `feat: add essay "${essayTitle}"`,
+      content: btoa(unescape(encodeURIComponent(updatedContent))),
+      sha,
+      branch: GITHUB_BRANCH
+    })
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json();
+    throw new Error(err.message || `GitHub PUT failed: ${putRes.status}`);
+  }
+}
+
+/* ── REBUILD index.html with updated essays array ── */
+function rebuildIndexHtml(html) {
+  // Replace the essays array in the JS section of index.html
+  // We serialize the current in-memory essays array and splice it in
+  const serialized = JSON.stringify(essays, null, 2);
+  // Match the let essays = [...] block in the HTML (between the markers we'll use)
+  const start = html.indexOf('let essays = JSON.parse(localStorage.getItem(\'oh_essays\') || \'null\') || [');
+  const end   = html.indexOf('];', start) + 2;
+  if (start === -1 || end === 1) throw new Error('Could not find essays array in index.html');
+  const before = html.slice(0, start);
+  const after  = html.slice(end);
+  return before + `let essays = JSON.parse(localStorage.getItem('oh_essays') || 'null') || ${serialized};` + after;
+}
+
+/* ── STATUS TOAST ── */
+function showStatus(msg, isError) {
+  let el = document.getElementById('gh-status');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'gh-status';
+    el.style.cssText = `
+      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
+      padding:12px 24px; border-radius:10px; font-size:12px; font-family:var(--font-sans);
+      letter-spacing:0.04em; z-index:999; max-width:90vw; text-align:center;
+      box-shadow:0 8px 32px rgba(0,0,0,0.3); transition:opacity 0.3s;
+    `;
+    document.body.appendChild(el);
+  }
+  el.style.background   = isError ? '#3e1a1a' : '#1a2e2a';
+  el.style.color        = isError ? '#f47272' : '#34d399';
+  el.style.border       = isError ? '1px solid #f4727244' : '1px solid #34d39944';
+  el.style.opacity      = '1';
+  el.textContent        = msg;
+  if (!isError) return; // success auto-clears via reload
+  setTimeout(() => { el.style.opacity = '0'; }, 5000);
 }
 
 /* ── INIT ── */
