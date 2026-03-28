@@ -14,11 +14,20 @@
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">Owner access</div>
-    <div class="login-sub">enter your password to edit this page</div>
-    <div class="form-row" style="margin-bottom:0">
+    <div class="login-sub">credentials stay in memory only — cleared on tab close</div>
+    <div class="form-row">
+      <label class="form-label">Password</label>
       <input class="form-input" id="pwInput" type="password" placeholder="password" onkeydown="if(event.key==='Enter') tryLogin()"/>
     </div>
-    <div class="login-err" id="loginErr">incorrect password</div>
+    <div class="form-row">
+      <label class="form-label">GitHub Token</label>
+      <input class="form-input" id="tokenInput" type="password" placeholder="ghp_..."/>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <label class="form-label">Branch</label>
+      <input class="form-input" id="branchInput" type="text" placeholder="qa" value="qa"/>
+    </div>
+    <div class="login-err" id="loginErr"></div>
     <div class="login-actions">
       <button class="btn-save" onclick="tryLogin()">unlock</button>
       <button class="btn-cancel" onclick="closeLogin()">cancel</button>
@@ -30,7 +39,7 @@
 
   <!-- ══ OWNER BAR ══ -->
   <div class="owner-bar" id="ownerBar">
-    <span>✦ editing as owner</span>
+    <span>✦ editing · branch: <strong id="ownerBranch">qa</strong></span>
     <button class="btn-logout" onclick="logout()">lock page</button>
   </div>
 
