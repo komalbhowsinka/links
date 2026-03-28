@@ -149,6 +149,19 @@ body::before {
 .login-err { font-size:11px; color:#f47272; margin-top:8px; display:none; letter-spacing:0.04em; }
 .login-actions { display:flex; gap:8px; margin-top:1rem; }
 
+.tag-recommended { border-color:#f472b644 !important; color:#f472b6 !important; background:#f472b611 !important; }
+
+/* ── RECOMMENDATION CARDS ── */
+.rec-card { border:1px solid var(--border2); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:10px; background:var(--bg2); }
+.rec-url { font-size:12px; color:var(--teal); word-break:break-all; margin-bottom:4px; }
+.rec-meta { font-size:10px; color:var(--white4); letter-spacing:0.04em; margin-bottom:10px; }
+.rec-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.rec-btn { font-size:10px; padding:4px 12px; border-radius:6px; cursor:pointer; font-family:var(--font-sans); letter-spacing:0.04em; text-decoration:none; border:1px solid var(--border2); background:transparent; color:var(--white3); transition:all 0.18s; display:inline-flex; align-items:center; }
+.rec-btn:hover { background:var(--bg3); }
+.rec-btn-add { background:var(--teal-dim); color:var(--teal); border-color:var(--border3); }
+.rec-btn-add:hover { background:var(--teal2); color:#fff; }
+.rec-btn-del:hover { background:#3e1a1a; border-color:#f4727244; color:#f47272; }
+
 /* ── FOOTER ── */
 .footer { text-align:center; font-size:11px; color:var(--white4); margin-top:3rem; letter-spacing:0.06em; user-select:none; }
 .lock-trigger { display:inline-block; cursor:default; opacity:0.2; transition:opacity 0.2s; margin-left:8px; font-size:13px; }
