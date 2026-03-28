@@ -111,9 +111,9 @@ body::before {
 .form-row { margin-bottom:14px; }
 .form-label { font-size:10px; color:var(--white4); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; display:block; }
 .form-optional { color:var(--white4); opacity:0.55; }
-.form-input,.form-textarea { width:100%; padding:9px 12px; border:1px solid var(--border2); border-radius:var(--radius-sm); background:var(--bg3); color:var(--white); font-family:var(--font-sans); font-size:13px; font-weight:300; outline:none; transition:border-color 0.18s; }
+.form-input,.form-textarea,select.form-input { width:100%; padding:9px 12px; border:1px solid var(--border2); border-radius:var(--radius-sm); background:var(--bg3); color:var(--white); font-family:var(--font-sans); font-size:13px; font-weight:300; outline:none; transition:border-color 0.18s; appearance:none; }
 .form-input::placeholder,.form-textarea::placeholder { color:var(--white4); }
-.form-input:focus,.form-textarea:focus { border-color:var(--teal2); }
+.form-input:focus,.form-textarea:focus,select.form-input:focus { border-color:var(--teal2); }
 .form-textarea { resize:vertical; min-height:72px; line-height:1.6; }
 .tag-row { display:flex; flex-wrap:wrap; gap:7px; }
 .tag-pick { padding:5px 13px; border-radius:20px; border:1px solid var(--border2); font-size:10px; font-family:var(--font-sans); background:transparent; color:var(--white3); cursor:pointer; transition:all 0.18s; letter-spacing:0.06em; text-transform:uppercase; }
