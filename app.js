@@ -189,8 +189,17 @@ function renderEssays() {
             <div class="group-body" id="${mid}" style="display:none">`;
 
       byYear[year][month].forEach(e => {
+        const deleteBtn = isOwner
+          ? `<button class="essay-delete" onclick="event.preventDefault();deleteEssay(${e.id})" title="delete essay">✕</button>`
+          : '';
         html += `<a class="essay-card" href="${e.url}" target="_blank">
-          <div class="essay-top"><div class="essay-title">${e.title}</div><div class="essay-arrow">↗</div></div>
+          <div class="essay-top">
+            <div class="essay-title">${e.title}</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              ${deleteBtn}
+              <div class="essay-arrow">↗</div>
+            </div>
+          </div>
           <div class="essay-meta">${tagHTML(e.category)}<span class="essay-source">${e.source}</span></div>
           <div class="essay-desc">${e.desc}</div>
         </a>`;
@@ -215,6 +224,27 @@ function toggleGroup(id) {
 
 function toggleForm(id) {
   document.getElementById(id).classList.toggle('open');
+}
+
+/* ── DELETE ESSAY ── */
+async function deleteEssay(id) {
+  const essay = essays.find(e => e.id === id);
+  if (!essay) return;
+  if (!confirm(`Delete "${essay.title}"?\n\nThis will commit the change to GitHub.`)) return;
+
+  essays = essays.filter(e => e.id !== id);
+  save();
+  renderEssays();
+
+  showStatus('⏳ Deleting from GitHub…', false);
+  try {
+    await commitToGitHub(`remove essay "${essay.title}"`);
+    showStatus('✅ Deleted & committed to GitHub! Reloading…', false);
+    setTimeout(() => location.reload(), 2500);
+  } catch (err) {
+    console.error(err);
+    showStatus('⚠️ Deleted locally but GitHub commit failed: ' + err.message, true);
+  }
 }
 
 /* ── SAVE ESSAY + COMMIT TO GITHUB ── */
@@ -244,7 +274,7 @@ async function saveEssay() {
 
   showStatus('⏳ Saving to GitHub…', false);
   try {
-    await commitToGitHub(title);
+    await commitToGitHub(`feat: add essay "${title}"`);
     showStatus('✅ Saved & committed to GitHub! Reloading…', false);
     setTimeout(() => location.reload(), 2500);
   } catch (err) {
@@ -254,7 +284,7 @@ async function saveEssay() {
 }
 
 /* ── GITHUB COMMIT ── */
-async function commitToGitHub(essayTitle) {
+async function commitToGitHub(commitMessage) {
   const token  = getToken();
   const branch = getBranch();
   if (!token) throw new Error('No GitHub token in session — please log out and log in again.');
@@ -278,7 +308,7 @@ async function commitToGitHub(essayTitle) {
     method: 'PUT',
     headers,
     body: JSON.stringify({
-      message: `feat: add essay "${essayTitle}"`,
+      message: commitMessage,
       content: btoa(unescape(encodeURIComponent(updatedContent))),
       sha,
       branch
