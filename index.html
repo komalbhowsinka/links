@@ -17,11 +17,17 @@
     <div class="login-sub">credentials stay in memory only — cleared on tab close</div>
     <div class="form-row">
       <label class="form-label">Password</label>
-      <input class="form-input" id="pwInput" type="password" placeholder="password" onkeydown="if(event.key==='Enter') tryLogin()"/>
+      <div class="pw-wrap">
+        <input class="form-input" id="pwInput" type="password" placeholder="password" onkeydown="if(event.key==='Enter') tryLogin()"/>
+        <button class="pw-eye" type="button" onclick="toggleEye('pwInput',this)">👁</button>
+      </div>
     </div>
     <div class="form-row">
       <label class="form-label">GitHub Token</label>
-      <input class="form-input" id="tokenInput" type="password" placeholder="ghp_..."/>
+      <div class="pw-wrap">
+        <input class="form-input" id="tokenInput" type="password" placeholder="ghp_..."/>
+        <button class="pw-eye" type="button" onclick="toggleEye('tokenInput',this)">👁</button>
+      </div>
     </div>
     <div class="form-row">
       <label class="form-label">Branch</label>
