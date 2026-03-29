@@ -220,34 +220,267 @@
 <script>
   /* ESSAYS_START */
   let essays = [
-  {"id":1,"title":"The Case of Empathy","url":"https://aeon.co/essays/a-sophisticates-primer-on-empathy-and-its-limits","source":"Aeon","category":"Psychology","dateLabel":"Mar 2026","desc":"In a world of difference we can \u2013 and should \u2013 work harder to cultivate subtle, perceptive empathy towards all human beings."},
-  {"id":2,"title":"Moral Luck","url":"https://aeon.co/essays/how-to-tell-a-bad-person-from-a-person-who-did-a-bad-thing","source":"Aeon","category":"Ethics","dateLabel":"Mar 2026","desc":"Two people drive drunk at night: one kills a pedestrian, one doesn't. Does the unlucky killer deserve more blame or not?"},
-  {"id":3,"title":"A belief in meritocracy is not only false: it's bad for you","url":"https://aeon.co/ideas/a-belief-in-meritocracy-is-not-only-false-its-bad-for-you","source":"Aeon","category":"Psychology","dateLabel":"Mar 2026","desc":"Believing in meritocracy makes people more selfish, less self-critical and less likely to support equal opportunity policies."},
-  {"id":4,"title":"Inside your dreamscape","url":"https://aeon.co/essays/dreams-are-a-precious-resource-dont-let-advertisers-hack-them","source":"Aeon","category":"Sleep and Dreams","dateLabel":"Mar 2026","desc":"Dreams could be used by writers, musicians or anyone else aiming for creative inspiration and exploration."},
-  {"id":5,"title":"A Brief History of Consumer Culture","url":"https://thereader.mitpress.mit.edu/a-brief-history-of-consumer-culture/","source":"MITPress","category":"Culture","dateLabel":"Mar 2026","desc":"Over the course of the 20th century, capitalism preserved its momentum by molding the ordinary person into a consumer."},
-  {"id":6,"title":"Happiness doesn't follow Success","url":"https://aeon.co/ideas/happiness-doesnt-follow-success-its-the-other-way-round","source":"Aeon","category":"Psychology","dateLabel":"Mar 2026","desc":"Happiness doesn't follow success: it's the other way round."},
-  {"id":7,"title":"Beyond The Paleo","url":"https://aeon.co/essays/morality-evolved-but-it-isnt-fixed","source":"Aeon","category":"Ethics","dateLabel":"Mar 2026","desc":"Our morality may be a product of natural selection, but that doesn't mean it's set in stone."},
-  {"id":8,"title":"Savage Care","url":"https://aeon.co/essays/why-bioethics-cannot-help-doctors-in-actual-medical-practice","source":"Aeon","category":"Bioethics","dateLabel":"Mar 2026","desc":"Neat ethical principles have nothing to say to doctors faced with the brutal, bloody compromises of hospital life."},
-  {"id":9,"title":"The Insurance Catastrophe","url":"https://aeon.co/essays/how-do-we-deal-with-the-catastrophe-of-uninsurability","source":"Aeon","category":"Economics","dateLabel":"Mar 2026","desc":"Whole regions of the world are now uninsurable, bringing radical uncertainty to the economy. How do we fix the problem?"},
-  {"id":10,"title":"Does culture make Emotion","url":"https://aeon.co/essays/who-am-i-when-i-care-emotion-through-the-lens-of-franz-boas","source":"Aeon","category":"Anthropology","dateLabel":"Mar 2026","desc":"Franz Boas helps us solve the puzzle of where our emotional lives originate: in our selves or in the cultures around us."},
-  {"id":11,"title":"There is no good reason to love each other - and that's a relief","url":"https://psyche.co/ideas/theres-no-good-reason-to-love-each-other-and-thats-a-relief","source":"Psyche","category":"Knowledge","dateLabel":"Mar 2026","desc":"Loving is an unreasonable decision (we are all extremely unpleasant little beasts) and that's what allows it to survive."},
-  {"id":12,"title":"Reversing extinction","url":"https://aeon.co/essays/de-extinction-is-redefining-what-it-means-to-be-alive","source":"Aeon","category":"Biology","dateLabel":"Mar 2026","desc":"Technologies of preserving and reviving organisms are redefining the meaning of life, death, and extinction itself."},
-  {"id":13,"title":"The Tyranny Of Time","url":"https://www.noemamag.com/the-tyranny-of-time/","source":"Noema","category":"Philosophy","dateLabel":"Mar 2026","desc":"The clock is a useful social tool, but it is also deeply political. It benefits some, marginalizes others."},
-  {"id":14,"title":"A duty to oneself","url":"https://aeon.co/essays/what-african-philosophy-says-about-our-duties-to-oneself","source":"Aeon","category":"Ethics","dateLabel":"Mar 2026","desc":"African philosophical values of harmony and vitality have much to offer our thinking about what we owe to ourselves."},
-  {"id":15,"title":"There are no psychopaths","url":"https://aeon.co/essays/psychopathy-is-a-zombie-idea-why-does-it-cling-on","source":"Aeon","category":"Psychiatry","dateLabel":"Mar 2026","desc":"Virtually everything you think you know about psychopathy has been thoroughly debunked. Why does this zombie idea live on?"},
-  {"id":16,"title":"Who is Walter Mignolo?","url":"https://aeon.co/essays/who-is-walter-mignolo-architect-of-decoloniality","source":"Aeon","category":"Political Philosophy","dateLabel":"Mar 2026","desc":"A prominent architect of decolonial theory, his diagnosis of European colonial ills is both penetrating and flawed."},
-  {"id":17,"title":"IQ scores are falling but, no, we're not growing more stupid","url":"https://psyche.co/ideas/iq-scores-are-falling-but-no-were-not-growing-more-stupid","source":"Psyche","category":"Thinking and Intelligence","dateLabel":"Mar 2026","desc":"Intuitively, the argument that digital media is dumbing us down is plausible."},
-  {"id":18,"title":"Abandoning ourselves","url":"https://aeon.co/essays/why-do-some-regrets-fade-while-others-persist-and-grow","source":"Aeon","category":"Values and Beliefs","dateLabel":"Mar 2026","desc":"Since living requires choosing, we will always feel regret about the paths not taken. But what matters is the future we forge."},
-  {"id":19,"title":"The presence of power","url":"https://aeon.co/essays/rammohun-roy-on-why-government-must-have-an-ethical-presence","source":"Aeon","category":"Politics","dateLabel":"Mar 2026","desc":"The Indian thinker Rammohun Roy believed that good governance must be close: distance made the British Empire cruel."},
-  {"id":20,"title":"The joy of sulk","url":"https://aeon.co/essays/sulking-is-a-fascinating-form-of-indirect-communication","source":"Aeon","category":"Philosophy","dateLabel":"Mar 2026","desc":"Full of implicit rules and paradoxes, sulking is a marvellous example of intense communication without clear declaration."},
-  {"id":21,"title":"Unbounded","url":"https://aeon.co/essays/she-freed-physics-but-emmy-noether-couldnt-escape-herself","source":"Aeon","category":"History","dateLabel":"Mar 2026","desc":"In the early 20th century, Emmy Noether's mathematics transcended the physical world. She longed to do the same herself."},
-  {"id":22,"title":"The greatest use of life","url":"https://aeon.co/essays/is-life-worth-living-the-pragmatic-maybe-of-william-james","source":"Aeon","category":"Thinkers","dateLabel":"Mar 2026","desc":"The pragmatist philosopher William James had a crisp and consistent response when asked if life was worth living: maybe."},
-  {"id":23,"title":"How selfish are we?","url":"https://aeon.co/essays/we-cooperate-to-survive-but-if-no-ones-looking-we-compete","source":"Aeon","category":"Anthropology","dateLabel":"Mar 2026","desc":"An age-old debate about human nature is being energised with new findings on the tightrope of cooperation and competition."},
-  {"id":24,"title":"Sleep is delicious","url":"https://aeon.co/essays/sleep-is-not-just-a-physical-need-but-a-delicious-pleasure","source":"Aeon","category":"Sleep and Dreams","dateLabel":"Mar 2026","desc":"The idea that we should reduce sleep to an efficient minimum in our lives gets something fundamentally wrong."},
-  {"id":25,"title":"Philosopher of pride","url":"https://aeon.co/essays/the-hidden-role-of-pride-and-shame-in-the-human-hive","source":"Aeon","category":"Economic History","dateLabel":"Mar 2026","desc":"For Mandeville, humankind has a bottomless need to be liked: it is this perennial craving that forms the foundation of society."},
-  {"id":26,"title":"Geist in the machine","url":"https://aeon.co/essays/if-we-hope-to-build-artificial-souls-where-should-we-start","source":"Aeon","category":"Neuroscience","dateLabel":"Mar 2026","desc":"As the 18th-century war between mechanism and romanticism returns, we face a new question: can we build artificial souls?"},
-  {"id":27,"title":"You can use music to escape your negative thought loops","url":"https://psyche.co/ideas/you-can-use-music-to-escape-your-negative-thought-loops","source":"Psyche","category":"Neuroscience","dateLabel":"Mar 2026","desc":"Research is uncovering the way music can calm the brain and there are techniques to help you amplify its emotional power."},
-  {"id":28,"title":"Kind of confusing","url":"https://aeon.co/essays/how-jazz-and-dolphins-can-help-explain-consciousness","source":"Aeon","category":"Philosophy","dateLabel":"Mar 2026","desc":"Is consciousness like jazz, something hard to pin down? Or is it more like the biology of dolphins, odd but natural?"}
+  {
+    "id": 29,
+    "title": "No, willpower isn’t a muscle – here’s a better way to think of it",
+    "url": "https://psyche.co/ideas/no-willpower-isnt-a-muscle-heres-a-better-way-to-think-of-it",
+    "source": "Psyche",
+    "category": "Science",
+    "dateLabel": "Mar 2026",
+    "desc": "The muscle metaphor based on ego-depletion theory hasn’t survived scrutiny. But there’s an alternative that holds promise"
+  },
+  {
+    "id": 1,
+    "title": "The Case of Empathy",
+    "url": "https://aeon.co/essays/a-sophisticates-primer-on-empathy-and-its-limits",
+    "source": "Aeon",
+    "category": "Psychology",
+    "dateLabel": "Mar 2026",
+    "desc": "In a world of difference we can – and should – work harder to cultivate subtle, perceptive empathy towards all human beings."
+  },
+  {
+    "id": 2,
+    "title": "Moral Luck",
+    "url": "https://aeon.co/essays/how-to-tell-a-bad-person-from-a-person-who-did-a-bad-thing",
+    "source": "Aeon",
+    "category": "Ethics",
+    "dateLabel": "Mar 2026",
+    "desc": "Two people drive drunk at night: one kills a pedestrian, one doesn't. Does the unlucky killer deserve more blame or not?"
+  },
+  {
+    "id": 3,
+    "title": "A belief in meritocracy is not only false: it's bad for you",
+    "url": "https://aeon.co/ideas/a-belief-in-meritocracy-is-not-only-false-its-bad-for-you",
+    "source": "Aeon",
+    "category": "Psychology",
+    "dateLabel": "Mar 2026",
+    "desc": "Believing in meritocracy makes people more selfish, less self-critical and less likely to support equal opportunity policies."
+  },
+  {
+    "id": 4,
+    "title": "Inside your dreamscape",
+    "url": "https://aeon.co/essays/dreams-are-a-precious-resource-dont-let-advertisers-hack-them",
+    "source": "Aeon",
+    "category": "Sleep and Dreams",
+    "dateLabel": "Mar 2026",
+    "desc": "Dreams could be used by writers, musicians or anyone else aiming for creative inspiration and exploration."
+  },
+  {
+    "id": 5,
+    "title": "A Brief History of Consumer Culture",
+    "url": "https://thereader.mitpress.mit.edu/a-brief-history-of-consumer-culture/",
+    "source": "MITPress",
+    "category": "Culture",
+    "dateLabel": "Mar 2026",
+    "desc": "Over the course of the 20th century, capitalism preserved its momentum by molding the ordinary person into a consumer."
+  },
+  {
+    "id": 6,
+    "title": "Happiness doesn't follow Success",
+    "url": "https://aeon.co/ideas/happiness-doesnt-follow-success-its-the-other-way-round",
+    "source": "Aeon",
+    "category": "Psychology",
+    "dateLabel": "Mar 2026",
+    "desc": "Happiness doesn't follow success: it's the other way round."
+  },
+  {
+    "id": 7,
+    "title": "Beyond The Paleo",
+    "url": "https://aeon.co/essays/morality-evolved-but-it-isnt-fixed",
+    "source": "Aeon",
+    "category": "Ethics",
+    "dateLabel": "Mar 2026",
+    "desc": "Our morality may be a product of natural selection, but that doesn't mean it's set in stone."
+  },
+  {
+    "id": 8,
+    "title": "Savage Care",
+    "url": "https://aeon.co/essays/why-bioethics-cannot-help-doctors-in-actual-medical-practice",
+    "source": "Aeon",
+    "category": "Bioethics",
+    "dateLabel": "Mar 2026",
+    "desc": "Neat ethical principles have nothing to say to doctors faced with the brutal, bloody compromises of hospital life."
+  },
+  {
+    "id": 9,
+    "title": "The Insurance Catastrophe",
+    "url": "https://aeon.co/essays/how-do-we-deal-with-the-catastrophe-of-uninsurability",
+    "source": "Aeon",
+    "category": "Economics",
+    "dateLabel": "Mar 2026",
+    "desc": "Whole regions of the world are now uninsurable, bringing radical uncertainty to the economy. How do we fix the problem?"
+  },
+  {
+    "id": 10,
+    "title": "Does culture make Emotion",
+    "url": "https://aeon.co/essays/who-am-i-when-i-care-emotion-through-the-lens-of-franz-boas",
+    "source": "Aeon",
+    "category": "Anthropology",
+    "dateLabel": "Mar 2026",
+    "desc": "Franz Boas helps us solve the puzzle of where our emotional lives originate: in our selves or in the cultures around us."
+  },
+  {
+    "id": 11,
+    "title": "There is no good reason to love each other - and that's a relief",
+    "url": "https://psyche.co/ideas/theres-no-good-reason-to-love-each-other-and-thats-a-relief",
+    "source": "Psyche",
+    "category": "Knowledge",
+    "dateLabel": "Mar 2026",
+    "desc": "Loving is an unreasonable decision (we are all extremely unpleasant little beasts) and that's what allows it to survive."
+  },
+  {
+    "id": 12,
+    "title": "Reversing extinction",
+    "url": "https://aeon.co/essays/de-extinction-is-redefining-what-it-means-to-be-alive",
+    "source": "Aeon",
+    "category": "Biology",
+    "dateLabel": "Mar 2026",
+    "desc": "Technologies of preserving and reviving organisms are redefining the meaning of life, death, and extinction itself."
+  },
+  {
+    "id": 13,
+    "title": "The Tyranny Of Time",
+    "url": "https://www.noemamag.com/the-tyranny-of-time/",
+    "source": "Noema",
+    "category": "Philosophy",
+    "dateLabel": "Mar 2026",
+    "desc": "The clock is a useful social tool, but it is also deeply political. It benefits some, marginalizes others."
+  },
+  {
+    "id": 14,
+    "title": "A duty to oneself",
+    "url": "https://aeon.co/essays/what-african-philosophy-says-about-our-duties-to-oneself",
+    "source": "Aeon",
+    "category": "Ethics",
+    "dateLabel": "Mar 2026",
+    "desc": "African philosophical values of harmony and vitality have much to offer our thinking about what we owe to ourselves."
+  },
+  {
+    "id": 15,
+    "title": "There are no psychopaths",
+    "url": "https://aeon.co/essays/psychopathy-is-a-zombie-idea-why-does-it-cling-on",
+    "source": "Aeon",
+    "category": "Psychiatry",
+    "dateLabel": "Mar 2026",
+    "desc": "Virtually everything you think you know about psychopathy has been thoroughly debunked. Why does this zombie idea live on?"
+  },
+  {
+    "id": 16,
+    "title": "Who is Walter Mignolo?",
+    "url": "https://aeon.co/essays/who-is-walter-mignolo-architect-of-decoloniality",
+    "source": "Aeon",
+    "category": "Political Philosophy",
+    "dateLabel": "Mar 2026",
+    "desc": "A prominent architect of decolonial theory, his diagnosis of European colonial ills is both penetrating and flawed."
+  },
+  {
+    "id": 17,
+    "title": "IQ scores are falling but, no, we're not growing more stupid",
+    "url": "https://psyche.co/ideas/iq-scores-are-falling-but-no-were-not-growing-more-stupid",
+    "source": "Psyche",
+    "category": "Thinking and Intelligence",
+    "dateLabel": "Mar 2026",
+    "desc": "Intuitively, the argument that digital media is dumbing us down is plausible."
+  },
+  {
+    "id": 18,
+    "title": "Abandoning ourselves",
+    "url": "https://aeon.co/essays/why-do-some-regrets-fade-while-others-persist-and-grow",
+    "source": "Aeon",
+    "category": "Values and Beliefs",
+    "dateLabel": "Mar 2026",
+    "desc": "Since living requires choosing, we will always feel regret about the paths not taken. But what matters is the future we forge."
+  },
+  {
+    "id": 19,
+    "title": "The presence of power",
+    "url": "https://aeon.co/essays/rammohun-roy-on-why-government-must-have-an-ethical-presence",
+    "source": "Aeon",
+    "category": "Politics",
+    "dateLabel": "Mar 2026",
+    "desc": "The Indian thinker Rammohun Roy believed that good governance must be close: distance made the British Empire cruel."
+  },
+  {
+    "id": 20,
+    "title": "The joy of sulk",
+    "url": "https://aeon.co/essays/sulking-is-a-fascinating-form-of-indirect-communication",
+    "source": "Aeon",
+    "category": "Philosophy",
+    "dateLabel": "Mar 2026",
+    "desc": "Full of implicit rules and paradoxes, sulking is a marvellous example of intense communication without clear declaration."
+  },
+  {
+    "id": 21,
+    "title": "Unbounded",
+    "url": "https://aeon.co/essays/she-freed-physics-but-emmy-noether-couldnt-escape-herself",
+    "source": "Aeon",
+    "category": "History",
+    "dateLabel": "Mar 2026",
+    "desc": "In the early 20th century, Emmy Noether's mathematics transcended the physical world. She longed to do the same herself."
+  },
+  {
+    "id": 22,
+    "title": "The greatest use of life",
+    "url": "https://aeon.co/essays/is-life-worth-living-the-pragmatic-maybe-of-william-james",
+    "source": "Aeon",
+    "category": "Thinkers",
+    "dateLabel": "Mar 2026",
+    "desc": "The pragmatist philosopher William James had a crisp and consistent response when asked if life was worth living: maybe."
+  },
+  {
+    "id": 23,
+    "title": "How selfish are we?",
+    "url": "https://aeon.co/essays/we-cooperate-to-survive-but-if-no-ones-looking-we-compete",
+    "source": "Aeon",
+    "category": "Anthropology",
+    "dateLabel": "Mar 2026",
+    "desc": "An age-old debate about human nature is being energised with new findings on the tightrope of cooperation and competition."
+  },
+  {
+    "id": 24,
+    "title": "Sleep is delicious",
+    "url": "https://aeon.co/essays/sleep-is-not-just-a-physical-need-but-a-delicious-pleasure",
+    "source": "Aeon",
+    "category": "Sleep and Dreams",
+    "dateLabel": "Mar 2026",
+    "desc": "The idea that we should reduce sleep to an efficient minimum in our lives gets something fundamentally wrong."
+  },
+  {
+    "id": 25,
+    "title": "Philosopher of pride",
+    "url": "https://aeon.co/essays/the-hidden-role-of-pride-and-shame-in-the-human-hive",
+    "source": "Aeon",
+    "category": "Economic History",
+    "dateLabel": "Mar 2026",
+    "desc": "For Mandeville, humankind has a bottomless need to be liked: it is this perennial craving that forms the foundation of society."
+  },
+  {
+    "id": 26,
+    "title": "Geist in the machine",
+    "url": "https://aeon.co/essays/if-we-hope-to-build-artificial-souls-where-should-we-start",
+    "source": "Aeon",
+    "category": "Neuroscience",
+    "dateLabel": "Mar 2026",
+    "desc": "As the 18th-century war between mechanism and romanticism returns, we face a new question: can we build artificial souls?"
+  },
+  {
+    "id": 27,
+    "title": "You can use music to escape your negative thought loops",
+    "url": "https://psyche.co/ideas/you-can-use-music-to-escape-your-negative-thought-loops",
+    "source": "Psyche",
+    "category": "Neuroscience",
+    "dateLabel": "Mar 2026",
+    "desc": "Research is uncovering the way music can calm the brain and there are techniques to help you amplify its emotional power."
+  },
+  {
+    "id": 28,
+    "title": "Kind of confusing",
+    "url": "https://aeon.co/essays/how-jazz-and-dolphins-can-help-explain-consciousness",
+    "source": "Aeon",
+    "category": "Philosophy",
+    "dateLabel": "Mar 2026",
+    "desc": "Is consciousness like jazz, something hard to pin down? Or is it more like the biology of dolphins, odd but natural?"
+  }
 ];
   /* ESSAYS_END */
 </script>
