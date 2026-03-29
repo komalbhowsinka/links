@@ -275,7 +275,7 @@ function deleteEssay(id) {
       try {
         await commitToGitHub(`remove essay "${essay.title}"`);
         showStatus('✅ Deleted & committed to GitHub! Reloading…', false);
-        setTimeout(() => location.reload(), 2500);
+        setTimeout(() => { localStorage.removeItem('oh_essays'); location.reload(); }, 2500);
       } catch (err) {
         console.error(err);
         const msg = err.message === 'TOKEN_EXPIRED'
@@ -365,7 +365,7 @@ async function saveEssay() {
   try {
     await commitToGitHub(`feat: add essay "${title}"`);
     showStatus('✅ Saved & committed to GitHub! Reloading…', false);
-    setTimeout(() => location.reload(), 2500);
+    setTimeout(() => { localStorage.removeItem('oh_essays'); location.reload(); }, 2500);
   } catch (err) {
     console.error(err);
     const msg = err.message === 'TOKEN_EXPIRED'
